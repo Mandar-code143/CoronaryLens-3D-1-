@@ -1,6 +1,6 @@
 {
   "version": "coronarylens-research-v2-nested-cv",
-  "created_at_utc": "2026-10-12T17:45:23.051026+00:00",
+  "created_at_utc": "2026-10-12T18:43:22.974334+00:00",
   "dataset_checksum": "728069128edfc15b04d8ab71d043ffe7b56950f1c70b51961f3d2413ca32ac30",
   "feature_schema_version": "uci411-source-v2-display-normalization",
   "feature_schema_checksum": "39420490c7bb15c543a724478e315474ede6e6dbd2d78cbd6f94ae4dcee157ef",
@@ -11,87 +11,87 @@
       "target": "CAD",
       "model_family": "logistic-regression",
       "model_version": "research-v2-repeated-nested-cv",
-      "operating_threshold": 0.66,
+      "operating_threshold": 0.73,
       "calibrator": {
-        "coef": 1.3516737263645433,
-        "intercept": 0.48538633244629575
+        "coef": 1.254947663152304,
+        "intercept": 1.0348130278331213
       },
-      "validation_method": "3x repeated 5-fold nested stratified CV with 3-fold inner ROC-AUC selection, Platt scaling calibration, and Youden threshold tuning",
+      "validation_method": "1x repeated 3-fold nested stratified CV with 2-fold inner ROC-AUC selection, Platt scaling calibration, and Youden threshold tuning",
       "score_semantics": "probability",
       "selection_rationale": "Serving family chosen via full-cohort candidate screening; reported metrics reflect honest repeated nested CV.",
       "artifact_file": "cad_pipeline.joblib",
       "artifact_sha256": "599d86b738cab2e40646448245bec29902dbfb77319aa0adb2ce1a6135bc1831",
       "calibrator_file": "cad_calibrator.joblib",
-      "calibrator_sha256": "3ccc880cf28d5d627e92f4437b3805b79fbd8ccbe4d0bf64b7ef3990fd388707"
+      "calibrator_sha256": "5b38a49957a25842e0c63b02225c8851c0203276f6977053fd824f80f50db1c1"
     },
     {
       "target": "LAD",
-      "model_family": "gradient_boosting",
+      "model_family": "random-forest",
       "model_version": "research-v2-repeated-nested-cv",
-      "operating_threshold": 0.59,
+      "operating_threshold": 0.47,
       "calibrator": {
-        "coef": 1.1687021936947761,
-        "intercept": 0.17329817451848212
+        "coef": 1.061487722060957,
+        "intercept": 0.20230614945410283
       },
-      "validation_method": "3x repeated 5-fold nested stratified CV with 3-fold inner ROC-AUC selection, Platt scaling calibration, and Youden threshold tuning",
+      "validation_method": "1x repeated 3-fold nested stratified CV with 2-fold inner ROC-AUC selection, Platt scaling calibration, and Youden threshold tuning",
       "score_semantics": "probability",
       "selection_rationale": "Serving family chosen via full-cohort candidate screening; reported metrics reflect honest repeated nested CV.",
       "artifact_file": "lad_pipeline.joblib",
-      "artifact_sha256": "dc03bad4f1ae29950258befe4420b12c522974a336f7fde3e8f6ad62068c8b6a",
+      "artifact_sha256": "65c8fdf5523c31c92ed03fe51b4b3c8a60cdd1727a7cd932f905dd0af732d009",
       "calibrator_file": "lad_calibrator.joblib",
-      "calibrator_sha256": "0c00fc28f32b7a0128200c7160fdfb6acbb53fbdd338d65dddedcd0aa96c98bb"
+      "calibrator_sha256": "f61388e8a043d17fa980878e98e2ddb66274bec04f7cfdd8fee8c50f749bfa51"
     },
     {
       "target": "LCX",
-      "model_family": "gradient_boosting",
+      "model_family": "random-forest",
       "model_version": "research-v2-repeated-nested-cv",
-      "operating_threshold": 0.34,
+      "operating_threshold": 0.42,
       "calibrator": {
-        "coef": 0.8996462971116288,
-        "intercept": -0.2036141450488629
+        "coef": 1.1591516360474947,
+        "intercept": -0.10547664404340028
       },
-      "validation_method": "3x repeated 5-fold nested stratified CV with 3-fold inner ROC-AUC selection, Platt scaling calibration, and Youden threshold tuning",
+      "validation_method": "1x repeated 3-fold nested stratified CV with 2-fold inner ROC-AUC selection, Platt scaling calibration, and Youden threshold tuning",
       "score_semantics": "probability",
       "selection_rationale": "Serving family chosen via full-cohort candidate screening; reported metrics reflect honest repeated nested CV.",
       "artifact_file": "lcx_pipeline.joblib",
-      "artifact_sha256": "29542481962cf0f26105e7a82fa448b17a97ef453a489cc4e32efc39038348ad",
+      "artifact_sha256": "195b8a165c256376379592135ad9c59e04dc9f68f04b4f8e7359d0a38ee32052",
       "calibrator_file": "lcx_calibrator.joblib",
-      "calibrator_sha256": "1f5b52146f21f292aba48763850e2129a9d9777b837870edb832ade9fa24136d"
+      "calibrator_sha256": "7dfdca074f86488ff9da5887dd9485c8ba56c343bdad041af79bfed05793a682"
     },
     {
       "target": "RCA",
       "model_family": "logistic_l1",
       "model_version": "research-v2-repeated-nested-cv",
-      "operating_threshold": 0.33,
+      "operating_threshold": 0.43,
       "calibrator": {
-        "coef": 0.7523813779294469,
-        "intercept": -0.46648869062876036
+        "coef": 0.7584232480456474,
+        "intercept": -0.37703611818414445
       },
-      "validation_method": "3x repeated 5-fold nested stratified CV with 3-fold inner ROC-AUC selection, Platt scaling calibration, and Youden threshold tuning",
+      "validation_method": "1x repeated 3-fold nested stratified CV with 2-fold inner ROC-AUC selection, Platt scaling calibration, and Youden threshold tuning",
       "score_semantics": "probability",
       "selection_rationale": "Serving family chosen via full-cohort candidate screening; reported metrics reflect honest repeated nested CV.",
       "artifact_file": "rca_pipeline.joblib",
       "artifact_sha256": "d5a393affe0a1671396ec72719c702f6ad5213b76aeaced24a95e9e883ebce8d",
       "calibrator_file": "rca_calibrator.joblib",
-      "calibrator_sha256": "a101c65b70b6a6490cd6a31e2e67f55fdb973518e007d44bab65cf8e640b1d3b"
+      "calibrator_sha256": "fd4abab1f8b247e8172a9dc91d7633dd4e570ccde19fedc800410aca5c76cb14"
     }
   ],
   "operating_thresholds": {
-    "CAD": 0.66,
-    "LAD": 0.59,
-    "LCX": 0.34,
-    "RCA": 0.33
+    "CAD": 0.73,
+    "LAD": 0.47,
+    "LCX": 0.42,
+    "RCA": 0.43
   },
   "representative_samples": [
     {
-      "id": 11,
+      "id": 274,
       "values": {
-        "Age": 80,
-        "Weight": 67,
-        "Length": 153,
+        "Age": 55,
+        "Weight": 71,
+        "Length": 150,
         "Sex": "Female",
-        "BMI": 28.621470374642232,
-        "DM": 0,
+        "BMI": 31.55555555555556,
+        "DM": 1,
         "HTN": 1,
         "Current Smoker": 0,
         "EX-Smoker": 0,
@@ -103,7 +103,7 @@
         "Thyroid Disease": "N",
         "CHF": "N",
         "DLP": "Y",
-        "BP": 140,
+        "BP": 150,
         "PR": 100,
         "Edema": 0,
         "Weak Peripheral Pulse": "N",
@@ -111,8 +111,8 @@
         "Systolic Murmur": "N",
         "Diastolic Murmur": "N",
         "Typical Chest Pain": 1,
-        "Dyspnea": "N",
-        "Function Class": 3,
+        "Dyspnea": "Y",
+        "Function Class": 0,
         "Atypical": "N",
         "Nonanginal": "N",
         "LowTH Ang": "N",
@@ -123,35 +123,35 @@
         "LVH": "N",
         "Poor R Progression": "N",
         "BBB": "N",
-        "FBS": 85,
-        "CR": 1.3,
-        "TG": 104,
-        "LDL": 112,
-        "HDL": 44.0,
-        "BUN": 18,
-        "ESR": 47,
-        "HB": 10.0,
+        "FBS": 256,
+        "CR": 1.0,
+        "TG": 172,
+        "LDL": 70,
+        "HDL": 26.0,
+        "BUN": 16,
+        "ESR": 56,
+        "HB": 9.0,
         "K": 4.3,
-        "Na": 128,
-        "WBC": 11000,
-        "Lymph": 31,
-        "Neut": 66,
-        "PLT": 290,
-        "EF-TTE": 50,
-        "Region RWMA": 3,
+        "Na": 141,
+        "WBC": 14000,
+        "Lymph": 20,
+        "Neut": 75,
+        "PLT": 213,
+        "EF-TTE": 40,
+        "Region RWMA": 2,
         "VHD": "mild"
       },
       "ground_truth": {
         "CAD": 1,
         "LAD": 1,
-        "LCX": 1,
+        "LCX": 0,
         "RCA": 1
       },
       "honest_oof_probability": {
-        "CAD": 0.9997,
-        "LAD": 0.9162,
-        "LCX": 0.3969,
-        "RCA": 0.5292
+        "CAD": 1.0,
+        "LAD": 0.7967,
+        "LCX": 0.483,
+        "RCA": 0.5524
       }
     },
     {
@@ -219,10 +219,10 @@
         "RCA": 0
       },
       "honest_oof_probability": {
-        "CAD": 0.0167,
-        "LAD": 0.0862,
-        "LCX": 0.115,
-        "RCA": 0.1073
+        "CAD": 0.0163,
+        "LAD": 0.1919,
+        "LCX": 0.112,
+        "RCA": 0.0373
       }
     },
     {
@@ -290,25 +290,25 @@
         "RCA": 0
       },
       "honest_oof_probability": {
-        "CAD": 0.9712,
-        "LAD": 0.8301,
-        "LCX": 0.5665,
-        "RCA": 0.5246
+        "CAD": 0.9808,
+        "LAD": 0.8267,
+        "LCX": 0.5631,
+        "RCA": 0.4759
       }
     },
     {
-      "id": 180,
+      "id": 20,
       "values": {
-        "Age": 62,
-        "Weight": 100,
-        "Length": 176,
-        "Sex": "Male",
-        "BMI": 32.28305785123967,
+        "Age": 47,
+        "Weight": 84,
+        "Length": 170,
+        "Sex": "Female",
+        "BMI": 29.065743944636683,
         "DM": 0,
         "HTN": 0,
         "Current Smoker": 0,
         "EX-Smoker": 0,
-        "FH": 0,
+        "FH": 1,
         "Obesity": "Y",
         "CRF": "N",
         "CVA": "N",
@@ -316,15 +316,15 @@
         "Thyroid Disease": "N",
         "CHF": "N",
         "DLP": "N",
-        "BP": 120,
-        "PR": 80,
+        "BP": 130,
+        "PR": 70,
         "Edema": 0,
         "Weak Peripheral Pulse": "N",
         "Lung rales": "N",
         "Systolic Murmur": "N",
         "Diastolic Murmur": "N",
         "Typical Chest Pain": 0,
-        "Dyspnea": "Y",
+        "Dyspnea": "N",
         "Function Class": 0,
         "Atypical": "Y",
         "Nonanginal": "N",
@@ -336,35 +336,35 @@
         "LVH": "N",
         "Poor R Progression": "N",
         "BBB": "N",
-        "FBS": 90,
-        "CR": 1.1,
-        "TG": 95,
-        "LDL": 112,
-        "HDL": 45.0,
-        "BUN": 14,
-        "ESR": 31,
-        "HB": 11.6,
-        "K": 4.1,
+        "FBS": 104,
+        "CR": 1.0,
+        "TG": 106,
+        "LDL": 137,
+        "HDL": 42.0,
+        "BUN": 10,
+        "ESR": 12,
+        "HB": 15.4,
+        "K": 4.3,
         "Na": 142,
-        "WBC": 6600,
-        "Lymph": 29,
-        "Neut": 69,
-        "PLT": 200,
-        "EF-TTE": 45,
+        "WBC": 6500,
+        "Lymph": 40,
+        "Neut": 60,
+        "PLT": 184,
+        "EF-TTE": 50,
         "Region RWMA": 0,
         "VHD": "N"
       },
       "ground_truth": {
         "CAD": 1,
-        "LAD": 1,
-        "LCX": 0,
-        "RCA": 1
+        "LAD": 0,
+        "LCX": 1,
+        "RCA": 0
       },
       "honest_oof_probability": {
-        "CAD": 0.0794,
-        "LAD": 0.3094,
-        "LCX": 0.3314,
-        "RCA": 0.2779
+        "CAD": 0.0432,
+        "LAD": 0.0295,
+        "LCX": 0.2006,
+        "RCA": 0.2751
       }
     },
     {
@@ -432,10 +432,10 @@
         "RCA": 0
       },
       "honest_oof_probability": {
-        "CAD": 0.9789,
-        "LAD": 0.7324,
-        "LCX": 0.2696,
-        "RCA": 0.4042
+        "CAD": 0.9973,
+        "LAD": 0.8822,
+        "LCX": 0.2676,
+        "RCA": 0.459
       }
     },
     {
@@ -503,10 +503,10 @@
         "RCA": 0
       },
       "honest_oof_probability": {
-        "CAD": 0.6469,
-        "LAD": 0.3075,
-        "LCX": 0.3784,
-        "RCA": 0.2915
+        "CAD": 0.7606,
+        "LAD": 0.2288,
+        "LCX": 0.4151,
+        "RCA": 0.3635
       }
     },
     {
@@ -574,10 +574,10 @@
         "RCA": 1
       },
       "honest_oof_probability": {
-        "CAD": 0.6536,
-        "LAD": 0.4975,
-        "LCX": 0.2675,
-        "RCA": 0.3196
+        "CAD": 0.733,
+        "LAD": 0.6803,
+        "LCX": 0.6061,
+        "RCA": 0.3682
       }
     },
     {
@@ -645,10 +645,10 @@
         "RCA": 0
       },
       "honest_oof_probability": {
-        "CAD": 0.9333,
-        "LAD": 0.8401,
-        "LCX": 0.3227,
-        "RCA": 0.3533
+        "CAD": 0.8787,
+        "LAD": 0.886,
+        "LCX": 0.2614,
+        "RCA": 0.318
       }
     }
   ],

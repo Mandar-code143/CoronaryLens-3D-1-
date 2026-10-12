@@ -12,7 +12,8 @@ jobs:
         with:
           python-version: '3.13'
       - run: python -m pip install -r requirements-research.txt
-      - run: python -m pytest
+      - run: python scripts/train_models.py --fast
+      - run: python -m pytest -v
 
   web-build:
     runs-on: ubuntu-latest
