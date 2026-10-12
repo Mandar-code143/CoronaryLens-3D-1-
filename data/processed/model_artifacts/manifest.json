@@ -1,14 +1,19 @@
 {
-  "artifact_version": "research-model-artifacts-v1",
+  "artifact_version": "research-model-artifacts-v2",
   "research_only": true,
   "files": {
-    "cad_pipeline.joblib": "7beb0c4c2ae2f919104e79cdf0cc456fe4a59be82b76a881dceebd548eca075d",
-    "candidate_screening_oof_predictions.csv": "7cad67641a01656358e5b62cc918ffb9b6b55580a83983bda08d7d500694f896",
-    "evaluation.json": "e899ef9d3515edbb25ae9d6ebf8ac20df4bfcf057c13d04101bc0db2d5e029bb",
-    "lad_pipeline.joblib": "9167ed3e9cfde8abf869706f93fd725fbcf1b43b89a7573d40a279bde9ebb243",
-    "lcx_pipeline.joblib": "d4c0c9777171dbde1d94d5e4d4779fe59dcdc08810f7779cbfcd3c41e34161f2",
-    "model_registry.json": "7d43acf5dffe3c685b2b1b662be5ce1b2861406f83b92444a43f5e53b24a621c",
-    "nested_oof_predictions.csv": "053ce47fa54a9af97608dc19ba3cfdf46b6acf3613547a753481fde1b3eb767a",
-    "rca_pipeline.joblib": "47293474030defbf7017c15b8ab70c774db5d45349e6d6d8461286800a5fbf24"
+    "cad_calibrator.joblib": "3ccc880cf28d5d627e92f4437b3805b79fbd8ccbe4d0bf64b7ef3990fd388707",
+    "cad_pipeline.joblib": "599d86b738cab2e40646448245bec29902dbfb77319aa0adb2ce1a6135bc1831",
+    "candidate_screening_oof_predictions.csv": "c7ea566ed37a987fa438276d55834f68b8c3c0191b355797feb523862501ae98",
+    "evaluation.json": "f95ccecb85e89fe695ba6a6eff3f1cc210f6b18b35b1ea6f3f11114a4dce7139",
+    "lad_calibrator.joblib": "0c00fc28f32b7a0128200c7160fdfb6acbb53fbdd338d65dddedcd0aa96c98bb",
+    "lad_pipeline.joblib": "dc03bad4f1ae29950258befe4420b12c522974a336f7fde3e8f6ad62068c8b6a",
+    "lcx_calibrator.joblib": "1f5b52146f21f292aba48763850e2129a9d9777b837870edb832ade9fa24136d",
+    "lcx_pipeline.joblib": "29542481962cf0f26105e7a82fa448b17a97ef453a489cc4e32efc39038348ad",
+    "model_registry.json": "04fb21a9bb3f1fed7383b71296c2ac4cd20f184a900f04f274a8b4d35f7b47e4",
+    "nested_oof_predictions.csv": "c7ea566ed37a987fa438276d55834f68b8c3c0191b355797feb523862501ae98",
+    "rca_calibrator.joblib": "a101c65b70b6a6490cd6a31e2e67f55fdb973518e007d44bab65cf8e640b1d3b",
+    "rca_pipeline.joblib": "d5a393affe0a1671396ec72719c702f6ad5213b76aeaced24a95e9e883ebce8d",
+    "shap_background.joblib": "d2e14e4f4f6c812e6c20a0a41eee68a13280f73528a9425ff1edd54b11d79516"
   }
 }

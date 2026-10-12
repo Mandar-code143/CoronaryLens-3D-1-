@@ -10,6 +10,7 @@ interface Session {
   setValue: (name: string, v: unknown) => void;
   clearProfile: () => void;
   loadDemo: () => Promise<void>; demoState: Async<null>;
+  loadProfile: (newValues: Values, label: string) => void;
   prediction: Async<PredictionRecord>;
   /** True when the profile changed after the displayed prediction was produced. */
   stale: boolean;
@@ -39,6 +40,13 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 
   const setValue = useCallback((name: string, v: unknown) => { setValues((p) => ({ ...p, [name]: v })); setIsDemo(false); }, []);
   const clearProfile = useCallback(() => { setValues({}); setIsDemo(false); setDemoLabel(undefined); setPrediction({ status: 'idle' }); setExplanations({}); }, []);
+  const loadProfile = useCallback((newValues: Values, label: string) => {
+    setValues(newValues);
+    setIsDemo(true);
+    setDemoLabel(label);
+    setPrediction({ status: 'idle' });
+    setExplanations({});
+  }, []);
   const loadDemo = useCallback(async () => {
     setDemoState({ status: 'loading' });
     try {
@@ -68,8 +76,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   }, [prediction, values]);
 
   const stale = prediction.status === 'success' && prediction.data.profile !== profileKey(values);
-  const value = useMemo<Session>(() => ({ values, isDemo, demoLabel, setValue, clearProfile, loadDemo, demoState, prediction, stale, runPrediction, explanations, explain }),
-    [values, isDemo, demoLabel, setValue, clearProfile, loadDemo, demoState, prediction, stale, runPrediction, explanations, explain]);
+  const value = useMemo<Session>(() => ({ values, isDemo, demoLabel, setValue, clearProfile, loadDemo, loadProfile, demoState, prediction, stale, runPrediction, explanations, explain }),
+    [values, isDemo, demoLabel, setValue, clearProfile, loadDemo, loadProfile, demoState, prediction, stale, runPrediction, explanations, explain]);
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
 export function useSession(): Session { const c = useContext(Ctx); if (!c) throw new Error('useSession outside provider'); return c; }

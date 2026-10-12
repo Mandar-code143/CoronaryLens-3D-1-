@@ -3,10 +3,11 @@ import { useLocation } from 'wouter';
 import { ArrowRight, Beaker, Trash2 } from 'lucide-react';
 import type { FeatureDefinition } from '@workspace/api-client-react';
 import { Notice, PageHead, Spinner } from '@/components/ui';
-import { useSchema } from '@/lib/api';
+import { useRepresentativeSamples, useSchema } from '@/lib/api';
 import { toProblem } from '@/lib/problem';
 import { completeness, hasValue, validateFeature } from '@/lib/validate';
 import { useSession } from '@/state/session';
+import type { Values } from '@/lib/validate';
 
 const GROUP_BLURB: Record<string, string> = {
   'Demographics': 'Basic descriptors recorded in the source workbook.',
@@ -17,6 +18,7 @@ const GROUP_BLURB: Record<string, string> = {
 
 export default function Inputs() {
   const s = useSession(); const q = useSchema(); const [, nav] = useLocation();
+  const samplesQ = useRepresentativeSamples();
   const [filter, setFilter] = useState(''); const [active, setActive] = useState<string | null>(null); const [touched, setTouched] = useState<Record<string, boolean>>({});
   const schema = q.data; const comp = useMemo(() => completeness(schema, s.values), [schema, s.values]);
   const groups = useMemo(() => { const m = new Map<string, FeatureDefinition[]>(); schema?.predictors.forEach((f) => { if (!m.has(f.group)) m.set(f.group, []); m.get(f.group)!.push(f); }); return m; }, [schema]);
@@ -39,8 +41,27 @@ export default function Inputs() {
             <p className="faint" style={{ marginTop: 8, fontSize: 12 }}>{comp.ready ? 'All required fields are valid.' : `${comp.total - comp.valid} field(s) still need a valid value.`}</p>
           </div>
           <div className="panel panel-pad" style={{ display: 'grid', gap: 10 }}>
-            <button className="btn primary" onClick={() => void s.loadDemo()} disabled={s.demoState.status === 'loading'}>{s.demoState.status === 'loading' ? <Spinner /> : <Beaker size={15} />}Load synthetic demo profile</button>
+            <button className="btn primary" onClick={() => void s.loadDemo()} disabled={s.demoState.status === 'loading'}>
+              {s.demoState.status === 'loading' ? <Spinner /> : <Beaker size={15} />}Load synthetic demo profile
+            </button>
             <p className="faint" style={{ fontSize: 12 }}>Per-feature median/mode of the training cohort. Not a real person.</p>
+            {samplesQ.data?.samples && (
+              <div style={{ marginTop: 4, display: 'grid', gap: 6 }}>
+                <span className="faint" style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  Representative Patient Cases
+                </span>
+                {samplesQ.data.samples.slice(0, 3).map((sample: { id: string; label: string; values: Record<string, unknown> }) => (
+                  <button
+                    key={sample.id}
+                    className="btn sm"
+                    style={{ justifyContent: 'flex-start', textAlign: 'left', fontSize: 12, padding: '6px 8px' }}
+                    onClick={() => s.loadProfile(sample.values as Values, sample.label)}
+                  >
+                    <span>{sample.label}</span>
+                  </button>
+                ))}
+              </div>
+            )}
             {s.demoState.status === 'error' && <Notice tone="bad" title="Could not load demo profile">{s.demoState.problem.message}</Notice>}
             <button className="btn ghost sm" onClick={s.clearProfile} disabled={comp.filled === 0}><Trash2 size={14} />Clear profile</button>
           </div>

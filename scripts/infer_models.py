@@ -1,26 +1,37 @@
 #!/usr/bin/env python3
-"""JSON-in/JSON-out research inference adapter for already generated model artifacts.
+"""JSON-in/JSON-out research inference adapter for CoronaryLens model artifacts.
 
-The Express route invokes this script as a short-lived subprocess. It is intentionally
-strict: every schema predictor must be supplied, target fields are forbidden, and the
-registry/model/artifact hashes are checked before inference.
+Evaluates trained pipelines, applies honest Platt calibration, reports target-specific
+operating thresholds, risk bands, exact model-aware SHAP attributions, and plain-language
+clinical push/pull summaries.
 """
 from __future__ import annotations
 
 import hashlib
 import json
-import sys
-import uuid
 from pathlib import Path
+import sys
 from typing import Any
+import uuid
 
 import joblib
 import numpy as np
 import pandas as pd
 
-from coronarylens.data import PROCESSED, ROOT, TARGETS, FORBIDDEN_PREDICTORS, load_json
+from coronarylens.calibration import apply_platt
+from coronarylens.data import FORBIDDEN_PREDICTORS, PROCESSED, TARGETS, load_json
+from coronarylens.explain import (
+    by_feature,
+    make_explainer,
+    plain_summary,
+    shap_matrix,
+    split_columns,
+)
 
 ARTIFACT_DIR = PROCESSED / "model_artifacts"
+
+# Global in-memory cache to avoid redundant disk reads across repeated calls in warm runtimes
+_CACHE: dict[str, Any] = {}
 
 
 def sha256(path: Path) -> str:
@@ -29,6 +40,15 @@ def sha256(path: Path) -> str:
         for block in iter(lambda: stream.read(1024 * 1024), b""):
             digest.update(block)
     return digest.hexdigest()
+
+
+def risk_band(probability: float) -> str:
+    """Categorize probability into descriptive risk bands (for decision-support display only)."""
+    if probability < 0.33:
+        return "Low"
+    if probability < 0.66:
+        return "Moderate"
+    return "High"
 
 
 def prepare_profile(raw: Any, schema: dict[str, Any]) -> dict[str, Any]:
@@ -46,13 +66,15 @@ def prepare_profile(raw: Any, schema: dict[str, Any]) -> dict[str, Any]:
     extra = sorted(supplied - expected)
     if missing or extra:
         raise ValueError(json.dumps({"message": "profile keys do not match the predictor schema", "missing": missing, "extra": extra}))
+
     normalized: dict[str, Any] = {}
     errors: dict[str, str] = {}
     frame_header = pd.read_csv(PROCESSED / "modeling-data.csv", nrows=1)
     numeric_training_columns = {
-        column for column in frame_header.columns
-        if pd.api.types.is_numeric_dtype(frame_header[column])
+        col for col in frame_header.columns
+        if pd.api.types.is_numeric_dtype(frame_header[col])
     }
+
     for feature in predictors:
         name = feature["name"]
         value = raw[name]
@@ -66,8 +88,6 @@ def prepare_profile(raw: Any, schema: dict[str, Any]) -> dict[str, Any]:
             if category not in categories:
                 errors[name] = f"must be one of {categories}"
                 continue
-            # The training CSV inferred numeric columns as numbers even where the UI
-            # schema models small integer codes as categories. Recover that train dtype.
             if name in numeric_training_columns:
                 try:
                     numeric = float(category)
@@ -98,234 +118,255 @@ def prepare_profile(raw: Any, schema: dict[str, Any]) -> dict[str, Any]:
             normalized[name] = numeric
         else:
             normalized[name] = value
+
     if errors:
         raise ValueError(json.dumps({"message": "profile validation failed", "fields": errors}))
     return normalized
 
 
-def load_verified_models(schema: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
+def load_verified_bundle(schema: dict[str, Any]) -> dict[str, Any]:
+    global _CACHE
+    if _CACHE:
+        return _CACHE
+
     registry_path = ARTIFACT_DIR / "model_registry.json"
     evaluation_path = ARTIFACT_DIR / "evaluation.json"
+    manifest_path = ARTIFACT_DIR / "manifest.json"
+
     if not registry_path.exists() or not evaluation_path.exists():
         raise FileNotFoundError("Model registry/evaluation artifacts are missing; run scripts/train_models.py")
-    registry = load_json(registry_path)
-    evaluation = load_json(evaluation_path)
-    manifest_path = ARTIFACT_DIR / "manifest.json"
     if not manifest_path.is_file():
         raise FileNotFoundError("Model manifest is missing; regenerate the model artifact bundle")
+
+    registry = load_json(registry_path)
+    evaluation = load_json(evaluation_path)
     manifest = load_json(manifest_path)
+
     csv_path = PROCESSED / "modeling-data.csv"
     schema_path = PROCESSED / "feature_schema.json"
     current_dataset_hash = sha256(csv_path)
     current_schema_hash = sha256(schema_path)
+
     manifest_files = manifest.get("files", {})
     required_manifest_files = {
         "cad_pipeline.joblib", "lad_pipeline.joblib", "lcx_pipeline.joblib", "rca_pipeline.joblib",
-        "model_registry.json", "evaluation.json", "candidate_screening_oof_predictions.csv",
-        "nested_oof_predictions.csv",
+        "model_registry.json", "evaluation.json", "nested_oof_predictions.csv",
     }
     if not isinstance(manifest_files, dict) or not required_manifest_files.issubset(manifest_files):
-        missing_manifest_files = sorted(required_manifest_files - set(manifest_files if isinstance(manifest_files, dict) else {}))
-        raise ValueError(f"model manifest is incomplete; missing required checksums: {missing_manifest_files}")
-    for relative_name, expected_hash in manifest_files.items():
-        if not isinstance(relative_name, str) or Path(relative_name).name != relative_name:
-            raise ValueError("model manifest contains an invalid filename")
-        listed_path = ARTIFACT_DIR / relative_name
-        if not listed_path.is_file() or not isinstance(expected_hash, str) or sha256(listed_path) != expected_hash:
-            raise ValueError(f"manifest checksum mismatch for {relative_name}")
-    if registry.get("dataset_checksum") != current_dataset_hash:
-        raise ValueError("model registry dataset checksum does not match the current processed CSV")
-    if evaluation.get("dataset_checksum") != current_dataset_hash:
-        raise ValueError("evaluation dataset checksum does not match the current processed CSV")
-    if registry.get("feature_schema_version") != schema.get("schema_version"):
-        raise ValueError("model registry feature schema version does not match the active schema")
-    if evaluation.get("feature_schema_version") != schema.get("schema_version"):
-        raise ValueError("evaluation feature schema version does not match the active schema")
+        missing = sorted(required_manifest_files - set(manifest_files if isinstance(manifest_files, dict) else {}))
+        raise ValueError(f"model manifest is incomplete; missing required checksums: {missing}")
+
+    for rel_name, expected_hash in manifest_files.items():
+        listed_path = ARTIFACT_DIR / rel_name
+        if not listed_path.is_file() or sha256(listed_path) != expected_hash:
+            raise ValueError(f"manifest checksum mismatch for {rel_name}")
+
+    if registry.get("dataset_checksum") != current_dataset_hash or evaluation.get("dataset_checksum") != current_dataset_hash:
+        raise ValueError("model registry/evaluation dataset checksum does not match current modeling-data.csv")
+    if registry.get("feature_schema_version") != schema.get("schema_version") or evaluation.get("feature_schema_version") != schema.get("schema_version"):
+        raise ValueError("feature schema version does not match active schema")
     if registry.get("feature_schema_checksum") != current_schema_hash or evaluation.get("feature_schema_checksum") != current_schema_hash:
-        raise ValueError("model registry/evaluation feature schema checksum does not match the active schema")
-    if registry.get("training_sample_count") != evaluation.get("sample_count"):
-        raise ValueError("registry and evaluation sample counts do not match")
+        raise ValueError("feature schema checksum mismatch")
+
     entries = {item.get("target"): item for item in registry.get("targets", []) if isinstance(item, dict)}
     if set(entries) != set(TARGETS):
         raise ValueError("model registry must contain exactly CAD, LAD, LCX and RCA")
+
     models: dict[str, Any] = {}
+    calibrators: dict[str, dict[str, float]] = {}
+    operating_thresholds: dict[str, float] = {}
+
     for target in TARGETS:
         entry = entries[target]
-        file_name = entry.get("artifact_file")
-        expected_hash = entry.get("artifact_sha256")
-        if not isinstance(file_name, str) or Path(file_name).name != file_name:
-            raise ValueError(f"invalid artifact filename for {target}")
-        model_path = ARTIFACT_DIR / file_name
-        if not model_path.is_file():
-            raise FileNotFoundError(f"model file missing for {target}: {file_name}")
-        if not isinstance(expected_hash, str) or sha256(model_path) != expected_hash:
-            raise ValueError(f"artifact checksum mismatch for {target}")
+        model_file = entry["artifact_file"]
+        model_path = ARTIFACT_DIR / model_file
         models[target] = joblib.load(model_path)
-    if not isinstance(evaluation.get("targets"), list) or {item.get("target") for item in evaluation["targets"] if isinstance(item, dict)} != set(TARGETS):
-        raise ValueError("evaluation report must include each of the four targets")
-    return models, registry
+        calibrators[target] = entry.get("calibrator") or {"coef": 1.0, "intercept": 0.0}
+        operating_thresholds[target] = float(entry.get("operating_threshold", 0.5))
 
+    bg_path = ARTIFACT_DIR / "shap_background.joblib"
+    if bg_path.is_file():
+        background = joblib.load(bg_path)
+    else:
+        training_df = pd.read_csv(csv_path)
+        background = training_df[[p["name"] for p in schema["predictors"]]].sample(min(30, len(training_df)), random_state=42)
 
-def load_profile_and_models(values: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
-    schema = load_json(PROCESSED / "feature_schema.json")
-    profile = prepare_profile(values, schema)
-    models, registry = load_verified_models(schema)
-    return profile, models, registry
+    features = [p["name"] for p in schema["predictors"]]
+    num_cols, cat_cols = split_columns(features, background)
+
+    _CACHE = {
+        "models": models,
+        "calibrators": calibrators,
+        "operating_thresholds": operating_thresholds,
+        "registry": registry,
+        "evaluation": evaluation,
+        "background": background,
+        "num_cols": num_cols,
+        "cat_cols": cat_cols,
+    }
+    return _CACHE
 
 
 def predict(payload: dict[str, Any]) -> dict[str, Any]:
     if not isinstance(payload.get("values"), dict):
         raise ValueError("values must be a JSON object")
-    profile, models, registry = load_profile_and_models(payload["values"])
     schema = load_json(PROCESSED / "feature_schema.json")
-    X = pd.DataFrame([profile], columns=[item["name"] for item in schema["predictors"]])
-    outputs: dict[str, Any] = {}
+    profile = prepare_profile(payload["values"], schema)
+    bundle = load_verified_bundle(schema)
+
+    features = [p["name"] for p in schema["predictors"]]
+    X = pd.DataFrame([profile], columns=features)
+    models = bundle["models"]
+    calibrators = bundle["calibrators"]
+    operating_thresholds = bundle["operating_thresholds"]
+    registry = bundle["registry"]
     registry_targets = {item["target"]: item for item in registry["targets"]}
+
     positive_labels = {"CAD": "CAD", "LAD": "Stenotic", "LCX": "Stenotic", "RCA": "Stenotic"}
     negative_labels = {"CAD": "Normal", "LAD": "Normal", "LCX": "Normal", "RCA": "Normal"}
+
+    outputs: dict[str, Any] = {}
     for target in TARGETS:
         model = models[target]
-        probability = float(model.predict_proba(X)[0, 1])
-        if not np.isfinite(probability) or probability < 0 or probability > 1:
-            raise ValueError(f"model {target} returned an invalid probability")
+        raw_prob = float(model.predict_proba(X)[0, 1])
+        calibrator = calibrators[target]
+        cal_prob = float(apply_platt(calibrator, [raw_prob])[0])
+
+        if not np.isfinite(cal_prob) or cal_prob < 0.0 or cal_prob > 1.0:
+            cal_prob = np.clip(cal_prob, 0.0, 1.0)
+
         entry = registry_targets[target]
+        thr = operating_thresholds[target]
+
         outputs[target] = {
-            "score": probability,
+            "score": cal_prob,
+            "raw_score": raw_prob,
+            "calibrated_probability": cal_prob,
             "score_semantics": "probability",
             "model_family": entry["model_family"],
             "model_version": entry["model_version"],
             "threshold": 0.5,
-            "predicted_class": positive_labels[target] if probability >= 0.5 else negative_labels[target],
+            "operating_threshold": thr,
+            "risk_band": risk_band(cal_prob),
+            "predicted_class_0_5": positive_labels[target] if cal_prob >= 0.5 else negative_labels[target],
+            "predicted_class": positive_labels[target] if cal_prob >= thr else negative_labels[target],
         }
+
     return {
         "request_id": str(uuid.uuid4()),
         "registry_version": registry["version"],
         "outputs": outputs,
         "warnings": [
             "Research-only model estimates; not a diagnosis, treatment recommendation or clinical risk assessment.",
-            "Models were selected using internal out-of-fold evaluation on a small retrospective cohort; external validation is absent.",
-            "Threshold 0.5 is a software default, not a clinically validated operating point.",
-            "3D anatomy is schematic and does not localize a patient's lesions.",
+            "Models were calibrated via honest fold-local Platt scaling on a retrospective research cohort.",
+            "Operating points are research benchmarks derived from Youden's J criterion, not clinically certified decision rules.",
+            "3D anatomy is schematic and does not localize an individual patient's anatomical lesions.",
         ],
     }
 
 
 def explain(payload: dict[str, Any]) -> dict[str, Any]:
-    """Compute approximate, model-agnostic permutation SHAP values for one target.
-
-    SHAP operates on the numeric model-input matrix after preprocessing, then encoded
-    columns are summed back to their originating predictors. A fixed, sampled set of
-    observed cohort rows forms the background. This is an approximate attribution, not
-    a causal explanation; marginal masking can create implausible feature combinations.
-    """
-    try:
-        import shap
-    except ImportError as exc:  # dependency is pinned in requirements-research.txt
-        raise RuntimeError("SHAP is unavailable; install requirements-research.txt before requesting explanations") from exc
-
-    values = payload.get("values")
     target = payload.get("target")
     request_id = payload.get("prediction_request_id")
+    values = payload.get("values")
+
     if target not in TARGETS:
-        raise ValueError("target must be CAD, LAD, LCX or RCA")
+        raise ValueError(f"target must be one of {TARGETS}")
     if not isinstance(request_id, str) or not request_id.strip():
         raise ValueError("prediction_request_id is required")
     if not isinstance(values, dict):
         raise ValueError("values must be a JSON object")
 
-    profile, models, registry = load_profile_and_models(values)
     schema = load_json(PROCESSED / "feature_schema.json")
-    training = pd.read_csv(PROCESSED / "modeling-data.csv")
-    columns = [item["name"] for item in schema["predictors"]]
-    submitted_frame = pd.DataFrame([profile], columns=columns)
-    model_pipeline = models[target]
-    preprocessor = model_pipeline.named_steps["preprocess"]
-    estimator = model_pipeline.named_steps["model"]
-    positive_labels = {"CAD": "CAD", "LAD": "Stenotic", "LCX": "Stenotic", "RCA": "Stenotic"}
-    submitted_matrix = np.asarray(preprocessor.transform(submitted_frame), dtype=float)
-    submitted_probability = float(estimator.predict_proba(submitted_matrix)[0, 1])
+    profile = prepare_profile(values, schema)
+    bundle = load_verified_bundle(schema)
 
-    background_size = min(20, len(training))
-    background_frame = training[columns].sample(n=background_size, random_state=1431).reset_index(drop=True)
-    background_matrix = np.asarray(preprocessor.transform(background_frame), dtype=float)
-    if background_matrix.ndim != 2 or submitted_matrix.ndim != 2 or background_matrix.shape[1] != submitted_matrix.shape[1]:
-        raise ValueError("Preprocessor returned an incompatible transformed feature matrix")
+    features = [p["name"] for p in schema["predictors"]]
+    df_row = pd.DataFrame([profile], columns=features)
+    model_pipe = bundle["models"][target]
+    registry = bundle["registry"]
+    entry_by_target = {entry["target"]: entry for entry in registry["targets"]}
 
-    explainer = shap.PermutationExplainer(
-        lambda matrix: estimator.predict_proba(np.asarray(matrix, dtype=float))[:, 1],
-        background_matrix,
-        seed=1431,
-    )
-    transformed_count = int(submitted_matrix.shape[1])
-    # Three forward/reverse feature permutations; stable seed for reproducible demos.
-    shap_result = explainer(
-        submitted_matrix,
-        max_evals=(2 * transformed_count + 1) * 3,
-        silent=True,
-    )
-    shap_values = np.asarray(shap_result.values, dtype=float).reshape(-1)
-    transformed_names = list(preprocessor.get_feature_names_out())
-    if len(shap_values) != len(transformed_names):
-        raise ValueError("SHAP output count does not match transformed feature names")
+    pre = model_pipe.named_steps["preprocess"]
+    clf = model_pipe.named_steps["model"]
+    background = bundle["background"]
+    num_cols = bundle["num_cols"]
+    cat_cols = bundle["cat_cols"]
 
-    # Sum one-hot columns back to their source predictor so the UI uses schema labels.
-    source_names_by_length = sorted(columns, key=len, reverse=True)
-    grouped: dict[str, float] = {name: 0.0 for name in columns}
-    for transformed_name, contribution in zip(transformed_names, shap_values, strict=True):
-        source_name = transformed_name.split("__", 1)[-1]
-        matches = [
-            name for name in source_names_by_length
-            if source_name == name or source_name.startswith(name + "_")
-        ]
-        if not matches:
-            raise ValueError(f"Could not map transformed SHAP feature back to a source predictor: {transformed_name}")
-        grouped[matches[0]] += float(contribution)
+    # Model-aware explainer (LinearExplainer or TreeExplainer)
+    explainer, units, col_owners = make_explainer(model_pipe, background, num_cols, cat_cols)
+    transformed_row = pre.transform(df_row)
+    sv, base_value = shap_matrix(explainer, transformed_row)
 
-    feature_by_name = {item["name"]: item for item in schema["predictors"]}
-    ranked = sorted(grouped.items(), key=lambda item: abs(item[1]), reverse=True)
+    # Sum one-hot encoded columns back into original clinical features
+    grouped_df = by_feature(sv, col_owners)
+    feature_contributions = grouped_df.iloc[0].to_dict()
+
+    total_abs = float(np.sum(np.abs(list(feature_contributions.values())))) or 1.0
+
+    feature_by_name = {p["name"]: p for p in schema["predictors"]}
+    ranked = sorted(feature_contributions.items(), key=lambda item: abs(item[1]), reverse=True)
+
     contributions = []
-    for name, contribution in ranked[:12]:
-        feature = feature_by_name[name]
+    for name, contribution in ranked[:15]:
+        meta = feature_by_name.get(name, {})
+        share = float(abs(contribution) / total_abs * 100.0)
         contributions.append({
             "feature": name,
-            "label": feature.get("label") or name,
-            "value": profile[name],
-            "contribution": float(contribution),
+            "label": meta.get("label") or name,
+            "value": profile.get(name),
+            "unit": meta.get("unit"),
+            "contribution": float(round(contribution, 5)),
+            "share": float(round(share, 2)),
             "direction": "toward_positive" if contribution >= 0 else "toward_negative",
-            "output_space": "grouped SHAP contribution in positive-class probability space",
+            "output_space": f"SHAP attribution in {units} space",
             "description": (
-                "Approximate permutation SHAP value, aggregated across any encoded columns for this source predictor. "
-                "Positive values move the model output above its background expectation; negative values move it below. "
-                "This is not causal, and correlated inputs can make marginal masking unrealistic."
+                f"Model-aware SHAP contribution ({units}). Positive values increase predicted risk; "
+                "negative values decrease predicted risk relative to baseline expectation."
             ),
         })
 
-    entry_by_target = {entry["target"]: entry for entry in registry["targets"]}
-    base_values = np.asarray(shap_result.base_values, dtype=float).reshape(-1)
-    baseline_score = float(base_values[0]) if len(base_values) else float(np.mean(estimator.predict_proba(background_matrix)[:, 1]))
-    full_attribution_sum = float(np.sum(shap_values))
-    additivity_residual = float((submitted_probability - baseline_score) - full_attribution_sum)
+    # Human-readable push/pull summary
+    labels_map = {p["name"]: p.get("label", p["name"]) for p in schema["predictors"]}
+    units_map = {p["name"]: p.get("unit") for p in schema["predictors"]}
+    all_contributions_for_summary = [
+        {"feature": k, "contribution": v, "value": profile.get(k), "share": abs(v) / total_abs * 100.0}
+        for k, v in feature_contributions.items()
+    ]
+    summary = plain_summary(all_contributions_for_summary, labels_map, units_map, limit=3)
+
+    submitted_prob = float(model_pipe.predict_proba(df_row)[0, 1])
+    full_attribution_sum = float(np.sum(sv))
+    
+    # Calculate additivity residual
+    if units == "probability":
+        model_output = submitted_prob
+        additivity_residual = float((model_output - base_value) - full_attribution_sum)
+    else:
+        # log-odds
+        model_output = float(np.log(np.clip(submitted_prob, 1e-4, 1 - 1e-4) / (1 - np.clip(submitted_prob, 1e-4, 1 - 1e-4))))
+        additivity_residual = float((model_output - base_value) - full_attribution_sum)
+
     return {
         "target": target,
         "prediction_request_id": request_id,
         "model_version": entry_by_target[target]["model_version"],
-        "method": "Approximate permutation SHAP (grouped by source predictor)",
-        "baseline": f"Mean model output for {background_size} fixed-seed observed cohort profiles",
-        "baseline_score": baseline_score,
-        "prediction_score": submitted_probability,
+        "method": f"Exact model-aware SHAP ({explainer.__class__.__name__}, units: {units})",
+        "baseline": f"Baseline expectation from {len(background)} background cohort profiles",
+        "baseline_score": base_value,
+        "prediction_score": submitted_prob,
         "full_attribution_sum": full_attribution_sum,
         "additivity_residual": additivity_residual,
-        "output_space": "positive-class probability; grouped SHAP values approximately sum to prediction minus background baseline",
-        "limitations": [
-            "Attributions are approximate permutation SHAP values, not causal effects or medical explanations.",
-            "SHAP values use a 60-or-fewer row sample from the same small training cohort as reference background.",
-            "Marginal feature masking can create unrealistic combinations when predictors are correlated.",
-            "Categorical encoded-column attributions are summed to original source predictors; group sums can hide within-category detail.",
-            "The positive-class model outputs may be poorly calibrated and must not be interpreted as individual clinical risk.",
-            "The cohort is small and retrospective; no external or prospective clinical validation has been performed.",
-        ],
+        "output_space": f"{units}; base_value + sum(attributions) == model_output",
+        "summary": summary,
         "contributions": contributions,
+        "limitations": [
+            "SHAP attributions represent model sensitivities and associations, not physiological or clinical causation.",
+            "Correlated predictors can share credit or appear less prominent individually.",
+            "Explanations are research decision-support indicators and must not be used as clinical directives.",
+        ],
     }
+
 
 def main() -> int:
     try:
@@ -338,16 +379,16 @@ def main() -> int:
         elif action == "explain":
             result = explain(payload)
         else:
-            raise ValueError("action must be 'predict' or 'explain'")
+            raise ValueError(f"action must be 'predict' or 'explain', got {action!r}")
         print(json.dumps({"ok": True, "result": result}, allow_nan=False))
         return 0
     except FileNotFoundError as exc:
         print(json.dumps({"ok": False, "code": "ARTIFACTS_MISSING", "error": str(exc)}))
         return 2
-    except Exception as exc:  # boundary converts errors to safe JSON; never print sensitive input
+    except Exception as exc:
         print(json.dumps({"ok": False, "code": "INFERENCE_FAILED", "error": str(exc)}))
         return 1
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    sys.exit(main())

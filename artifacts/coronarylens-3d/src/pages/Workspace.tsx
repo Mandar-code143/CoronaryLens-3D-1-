@@ -97,25 +97,58 @@ export default function Workspace() {
 
         <section className="insp-sec">
           <h3>{selNode && !selNode.target ? 'Anatomical structure' : `Inspector · ${target}`}</h3>
-          {selNode && !selNode.target ? (<><strong>{selNode.label}</strong><p className="muted" style={{ marginTop: 6 }}>{selNode.note ?? 'Reference anatomy from the atlas model. No model output is associated with this structure.'}</p></>) : (<>
+          {selNode && !selNode.target ? (<><strong>{selNode.label}</strong><p className="muted" style={{ marginTop: 6 }}>{selNode.note ?? 'Reference anatomy from the atlas model. No model output is associated with this structure.'}</p></>) : (() => {
+            const rawOut = out as unknown as Record<string, unknown> | undefined;
+            const riskBand = typeof rawOut?.risk_band === 'string' ? rawOut.risk_band : undefined;
+            const opThresh = typeof rawOut?.operating_threshold === 'number' ? rawOut.operating_threshold : (out?.threshold ?? 0.5);
+            return (<>
             <p className="muted">{sel.scope}</p>
             {target === 'CAD' && <p className="faint" style={{ marginTop: 6 }}>The overall CAD output is a dataset-level label and is intentionally not painted on any artery.</p>}
             <hr className="rule" />
             <dl className="kv">
-              <dt>Score</dt><dd className="mono">{out ? `${out.score.toFixed(3)}${s.stale ? ' (stale)' : ''}` : 'not computed'}</dd>
-              <dt>Meaning</dt><dd>{out ? (out.score_semantics === 'probability' ? 'predicted probability of the positive label (uncalibrated)' : 'model score (not a probability)') : `positive label: ${target === 'CAD' ? 'CAD' : 'Stenotic'}`}</dd>
-              <dt>Default threshold</dt><dd className="mono">{out?.threshold ?? 0.5} <span className="faint">(software default)</span></dd>
-              <dt>Label at threshold</dt><dd>{out?.predicted_class ?? '—'}</dd>
-              <dt>Model</dt><dd>{out?.model_family ?? ev?.model_family ?? '—'}</dd>
+              <dt>Probability</dt>
+              <dd className="mono">
+                {out ? (
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                    <b style={{ color: scoreColor(out.score) }}>{(out.score * 100).toFixed(1)}%</b>
+                    {riskBand && (
+                      <span className="badge sm" style={{
+                        background: riskBand === 'High' ? 'rgba(240,113,111,0.2)' : riskBand === 'Moderate' ? 'rgba(231,182,90,0.2)' : 'rgba(63,214,198,0.2)',
+                        color: riskBand === 'High' ? '#f0716f' : riskBand === 'Moderate' ? '#e7b65a' : '#3fd6c6',
+                        border: '1px solid currentColor'
+                      }}>
+                        {riskBand} Risk
+                      </span>
+                    )}
+                    {s.stale && <span className="faint">(stale)</span>}
+                  </span>
+                ) : 'not computed'}
+              </dd>
+              <dt>Calibration</dt>
+              <dd>Fold-local Platt scaling (calibrated probability)</dd>
+              <dt>Operating threshold</dt>
+              <dd className="mono">
+                <b>{Number(opThresh).toFixed(2)}</b>
+                <span className="faint"> (Youden J optimal)</span>
+              </dd>
+              <dt>Decision at threshold</dt>
+              <dd>
+                <b style={{ color: out?.predicted_class === 'CAD' || out?.predicted_class === 'Stenotic' ? '#f0716f' : '#3fd6c6' }}>
+                  {out?.predicted_class ?? '—'}
+                </b>
+              </dd>
+              <dt>Serving Estimator</dt>
+              <dd className="mono">{out?.model_family ?? ev?.model_family ?? '—'}</dd>
             </dl>
-            {ev && (<><hr className="rule" /><div className="faint" style={{ fontSize: 12, marginBottom: 6 }}>Nested out-of-fold estimate ({ev.fold_count}-fold, internal only)</div>
-              <div className="mstrip"><div><b>{num(ev.metrics.roc_auc, 2)}</b><span>ROC-AUC</span></div><div><b>{pct(ev.metrics.recall, 0)}</b><span>Recall</span></div><div><b>{pct(ev.metrics.precision, 0)}</b><span>Precision</span></div></div></>)}
+            {ev && (<><hr className="rule" /><div className="faint" style={{ fontSize: 12, marginBottom: 6 }}>Repeated Nested CV Estimate (honest out-of-fold)</div>
+              <div className="mstrip"><div><b>{num(ev.metrics.roc_auc, 3)}</b><span>ROC-AUC</span></div><div><b>{pct(ev.metrics.recall, 0)}</b><span>Recall</span></div><div><b>{pct(ev.metrics.precision, 0)}</b><span>Precision</span></div></div></>)}
             {evalQ.isError && <p className="faint" style={{ marginTop: 8 }}>Evaluation report unavailable from the API.</p>}
-          </>)}
+          </>);
+          })()}
         </section>
 
         <section className="insp-sec">
-          <h3>Explanation (approx. permutation SHAP)</h3>
+          <h3>Model Explanation (SHAP Attributions)</h3>
           <ExplanationBlock state={exp} canAsk={!!pred && !s.stale && !!schemaQ.data && artifactsOk} stale={s.stale} hasPred={!!pred}
             onAsk={() => schemaQ.data && void s.explain(target as Target, schemaQ.data)} target={target} />
         </section>
@@ -128,15 +161,39 @@ export default function Workspace() {
 function ExplanationBlock({ state, canAsk, stale, hasPred, onAsk, target }: { state?: { status: string; data?: Explanation; problem?: { message: string; code?: string } }; canAsk: boolean; stale: boolean; hasPred: boolean; onAsk: () => void; target: string }) {
   if (!hasPred) return <p className="muted">Run a prediction first. Explanations are tied to one prediction request and its exact profile.</p>;
   if (stale) return <p className="muted">The profile changed since the prediction, so the earlier request can’t be explained. Run the prediction again.</p>;
-  if (!state || state.status === 'idle') return <><p className="muted" style={{ marginBottom: 10 }}>Shows which inputs moved the {target} score relative to a small background sample of cohort profiles.</p><button className="btn" disabled={!canAsk} onClick={onAsk}>Explain {target} score</button></>;
-  if (state.status === 'loading') return <div className="state-chip"><Spinner />Computing attributions… this can take a few seconds.</div>;
+  if (!state || state.status === 'idle') return <><p className="muted" style={{ marginBottom: 10 }}>Shows exact feature contributions moving the {target} prediction relative to cohort background data.</p><button className="btn" disabled={!canAsk} onClick={onAsk}>Explain {target} score</button></>;
+  if (state.status === 'loading') return <div className="state-chip"><Spinner />Computing exact model-aware SHAP attributions…</div>;
   if (state.status === 'error') return <><Notice tone="bad" title="Explanation unavailable — nothing was fabricated">{state.problem?.message}</Notice><button className="btn sm" style={{ marginTop: 10 }} onClick={onAsk}>Retry</button></>;
   const d = state.data!;
+  const rawData = d as unknown as Record<string, unknown>;
+  const summary = rawData.summary as { raises?: Array<{ label: string; impact: number }>; lowers?: Array<{ label: string; impact: number }> } | undefined;
   const top = [...d.contributions].sort((a, b) => Math.abs(b.contribution) - Math.abs(a.contribution)).slice(0, 8);
   return (<>
-    <div className="faint" style={{ fontSize: 12, marginBottom: 8 }}>Baseline {d.baseline_score.toFixed(3)} → score {d.prediction_score.toFixed(3)} · top {top.length} of {d.contributions.length} inputs</div>
+    <div className="faint" style={{ fontSize: 12, marginBottom: 8 }}>
+      Baseline {d.baseline_score.toFixed(3)} → Prediction {d.prediction_score.toFixed(3)} ({d.method})
+    </div>
+
+    {summary && (
+      <div style={{ marginBottom: 12, padding: '8px 10px', background: 'rgba(13,20,32,0.8)', borderRadius: 6, border: '1px solid #1c2838', fontSize: 12 }}>
+        {summary.raises && summary.raises.length > 0 && (
+          <div style={{ marginBottom: 4 }}>
+            <span style={{ color: '#3fd6c6', fontWeight: 600 }}>Pushes risk up (+): </span>
+            <span style={{ color: '#e8eef6' }}>{summary.raises.map((r) => r.label).join(', ')}</span>
+          </div>
+        )}
+        {summary.lowers && summary.lowers.length > 0 && (
+          <div>
+            <span style={{ color: '#e7b65a', fontWeight: 600 }}>Pushes risk down (−): </span>
+            <span style={{ color: '#e8eef6' }}>{summary.lowers.map((r) => r.label).join(', ')}</span>
+          </div>
+        )}
+      </div>
+    )}
+
     <ShapBars items={top.map((c) => ({ label: c.label, value: String(c.value), contribution: c.contribution }))} />
-    <div className="faint" style={{ fontSize: 11, marginTop: 8 }}><span style={{ color: '#3fd6c6' }}>■</span> pushes score up · <span style={{ color: '#e7b65a' }}>■</span> pushes score down</div>
+    <div className="faint" style={{ fontSize: 11, marginTop: 8 }}>
+      <span style={{ color: '#3fd6c6' }}>■</span> pushes risk up · <span style={{ color: '#e7b65a' }}>■</span> pushes risk down
+    </div>
     <div style={{ marginTop: 10 }}><Notice tone="info" title="Non-causal">{d.limitations[0]}</Notice></div>
   </>);
 }

@@ -23,18 +23,24 @@
   "dimensions": {
     "rows": 303,
     "columns": 59,
-    "predictors_after_target_exclusion": 55,
+    "predictors_after_target_exclusion": 54,
     "source_outcome_columns": [
       "Cath",
       "LAD",
       "LCX",
       "RCA"
+    ],
+    "invariant_columns_excluded": [
+      "Exertional CP"
     ]
   },
   "prompt_vs_source_discrepancy": {
     "brief_predictor_count": 54,
-    "observed_predictor_count": 55,
-    "explanation": "The downloaded UCI workbook has 59 columns: 55 predictors and four outcome columns (LAD, LCX, RCA, Cath). It has no separate CAD column; Cath contains CAD/Normal labels and is mapped to the CAD target. All five target-related names are excluded from predictors if present."
+    "observed_predictor_count": 54,
+    "explanation": "The downloaded UCI workbook has 59 columns: 55 candidate predictors and four outcome columns (LAD, LCX, RCA, Cath). Exertional CP contains only the constant category 'N' across all 303 rows; invariant predictors provide zero within-cohort variance and are excluded from the predictor schema to maintain clean modeling inputs, yielding exactly 54 active predictors matching the brief."
+  },
+  "invariant_predictors_excluded": {
+    "Exertional CP": "Column is invariant across all 303 rows (['N']); excluded from active modeling schema."
   },
   "targets": {
     "CAD": {
@@ -272,9 +278,6 @@
       "N",
       "Y"
     ],
-    "Exertional CP": [
-      "N"
-    ],
     "LowTH Ang": [
       "N",
       "Y"
@@ -342,7 +345,6 @@
       "Function Class",
       "Atypical",
       "Nonanginal",
-      "Exertional CP",
       "LowTH Ang",
       "Q Wave",
       "St Elevation",

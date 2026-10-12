@@ -1,7 +1,7 @@
 {
   "schema_version": "uci411-source-v2-display-normalization",
   "source": "UCI Machine Learning Repository, dataset 411",
-  "predictor_count": 55,
+  "predictor_count": 54,
   "forbidden_predictors": [
     "CAD",
     "Cath",
@@ -455,21 +455,6 @@
       "categories": [
         "N",
         "Y"
-      ],
-      "semantics_verified": false
-    },
-    {
-      "name": "Exertional CP",
-      "label": "Exertional chest pain",
-      "description": "Source-coded exertional chest-pain indicator.",
-      "group": "Symptoms & examination",
-      "type": "categorical",
-      "required": true,
-      "unit": null,
-      "minimum": null,
-      "maximum": null,
-      "categories": [
-        "N"
       ],
       "semantics_verified": false
     },

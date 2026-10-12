@@ -15,6 +15,7 @@ SOURCE = ROOT / "data/raw/extension-of-z-alizadeh-sani.xlsx"
 PROCESSED = ROOT / "data/processed"
 TARGET_COLUMNS = {"CAD", "Cath", "LAD", "LCX", "RCA"}
 TARGET_ALIASES = {"CAD": "Cath", "LAD": "LAD", "LCX": "LCX", "RCA": "RCA"}
+INVARIANT_COLUMNS = {"Exertional CP"}
 
 # Human-readable display metadata. Raw feature keys are retained for model compatibility.
 # These descriptions are general expansions, not a substitute for reviewing the
@@ -162,11 +163,16 @@ def main() -> None:
     if missing_targets:
         raise ValueError(f"Expected source outcome columns are missing: {missing_targets}")
 
-    predictors = [column for column in source_columns if column not in TARGET_COLUMNS]
-    if len(predictors) != len(source_columns) - len(set(source_columns) & TARGET_COLUMNS):
-        raise ValueError("Target leakage exclusion did not produce a unique predictor schema.")
+    predictors = [
+        column for column in source_columns
+        if column not in TARGET_COLUMNS and column not in INVARIANT_COLUMNS
+    ]
+    if len(predictors) != len(source_columns) - len(set(source_columns) & TARGET_COLUMNS) - len(set(source_columns) & INVARIANT_COLUMNS):
+        raise ValueError("Target leakage and invariant exclusion did not produce a unique predictor schema.")
     if set(predictors) & TARGET_COLUMNS:
         raise ValueError("A target-related column leaked into the predictor schema.")
+    if set(predictors) & INVARIANT_COLUMNS:
+        raise ValueError("An invariant column leaked into the predictor schema.")
 
     target_values: dict[str, pd.Series] = {}
     target_distributions: dict[str, dict[str, int]] = {}
@@ -287,16 +293,22 @@ def main() -> None:
             "columns": int(frame.shape[1]),
             "predictors_after_target_exclusion": len(predictors),
             "source_outcome_columns": sorted(set(source_columns) & TARGET_COLUMNS),
+            "invariant_columns_excluded": sorted(INVARIANT_COLUMNS),
         },
         "prompt_vs_source_discrepancy": {
             "brief_predictor_count": 54,
             "observed_predictor_count": len(predictors),
             "explanation": (
-                "The downloaded UCI workbook has 59 columns: 55 predictors and four "
-                "outcome columns (LAD, LCX, RCA, Cath). It has no separate CAD column; "
-                "Cath contains CAD/Normal labels and is mapped to the CAD target. "
-                "All five target-related names are excluded from predictors if present."
+                "The downloaded UCI workbook has 59 columns: 55 candidate predictors and four "
+                "outcome columns (LAD, LCX, RCA, Cath). Exertional CP contains only the constant "
+                "category 'N' across all 303 rows; invariant predictors provide zero within-cohort "
+                "variance and are excluded from the predictor schema to maintain clean modeling inputs, "
+                "yielding exactly 54 active predictors matching the brief."
             ),
+        },
+        "invariant_predictors_excluded": {
+            col: f"Column is invariant across all {len(frame)} rows ({frame[col].unique().tolist()}); excluded from active modeling schema."
+            for col in INVARIANT_COLUMNS if col in frame
         },
         "targets": {
             target: {

@@ -347,19 +347,62 @@ router.get("/evaluation", (_req, res) => {
       dataset_source: evaluation.dataset_source,
       sample_count: evaluation.sample_count,
       validation_method: evaluation.validation_method,
-      targets: (evaluation.targets as JsonObject[]).map((entry) => ({
-        target: entry.target,
-        model_family: entry.model_family,
-        metrics: entry.metrics,
-        fold_count: entry.fold_count,
-        confusion_matrix: (entry.metrics as JsonObject | undefined)?.confusion_matrix,
-      })),
+      targets: (evaluation.targets as JsonObject[]).map((entry) => {
+        const rawMatrix = (entry.metrics as JsonObject | undefined)?.confusion_matrix;
+        const matrix = Array.isArray(rawMatrix)
+          ? (rawMatrix as unknown[][]).map((row) =>
+              Array.isArray(row) ? row.map((val) => Math.round(Number(val))) : [],
+            )
+          : undefined;
+        return {
+          target: entry.target,
+          model_family: entry.model_family,
+          metrics: entry.metrics,
+          fold_count: entry.fold_count,
+          confusion_matrix: matrix,
+        };
+      }),
     });
     res.json(response);
+  } catch (err: unknown) {
+    const detail = err instanceof Error ? err.message : String(err);
+    res.status(503).json({
+      error: `The evaluation artifact could not be adapted to the public API contract: ${detail}`,
+      code: "EVALUATION_ARTIFACT_INVALID",
+    });
+  }
+});
+
+router.get("/evaluation/details", (_req, res) => {
+  try {
+    const raw = readArtifact("data/processed/model_artifacts/evaluation.json");
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
+      unavailable(res, "Evaluation details", ["No evaluation details artifact is available."]);
+      return;
+    }
+    res.json(raw);
   } catch {
     res.status(503).json({
-      error: "The evaluation artifact could not be adapted to the public API contract.",
-      code: "EVALUATION_ARTIFACT_INVALID",
+      error: "The evaluation details artifact could not be read.",
+      code: "EVALUATION_DETAILS_INVALID",
+    });
+  }
+});
+
+router.get("/samples", (_req, res) => {
+  try {
+    const raw = readArtifact("data/processed/model_artifacts/model_registry.json");
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
+      unavailable(res, "Representative samples", ["No model registry available."]);
+      return;
+    }
+    const registry = raw as JsonObject;
+    const samples = Array.isArray(registry.representative_samples) ? registry.representative_samples : [];
+    res.json({ samples });
+  } catch {
+    res.status(503).json({
+      error: "Representative samples could not be read.",
+      code: "SAMPLES_UNAVAILABLE",
     });
   }
 });

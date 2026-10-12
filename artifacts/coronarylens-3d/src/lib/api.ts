@@ -17,3 +17,29 @@ export function useArtifactStatus() {
 export function useSchema() { return useQuery({ queryKey: ['schema'], queryFn: () => getClinicalSchema(), retry: false, staleTime: Infinity }); }
 export function useEvaluation() { return useQuery({ queryKey: ['evaluation'], queryFn: () => getEvaluation(), retry: false }); }
 export function useRegistry() { return useQuery({ queryKey: ['registry'], queryFn: () => getModelRegistry(), retry: false }); }
+
+export function useEvaluationDetails() {
+  return useQuery({
+    queryKey: ['evaluation-details'],
+    queryFn: async () => {
+      const res = await fetch('/api/evaluation/details');
+      if (!res.ok) throw new Error('Evaluation details not available');
+      return res.json();
+    },
+    retry: false,
+    staleTime: 60000,
+  });
+}
+
+export function useRepresentativeSamples() {
+  return useQuery({
+    queryKey: ['representative-samples'],
+    queryFn: async () => {
+      const res = await fetch('/api/samples');
+      if (!res.ok) throw new Error('Representative samples not available');
+      return res.json();
+    },
+    retry: false,
+    staleTime: 60000,
+  });
+}

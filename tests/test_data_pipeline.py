@@ -16,8 +16,9 @@ from train_models import metrics_for, make_preprocessor  # noqa: E402
 
 def test_processed_dataset_has_expected_shape_and_binary_targets() -> None:
     frame, features, schema = load_data(ROOT)
-    assert frame.shape == (303, 59)
-    assert len(features) == schema["predictor_count"] == 55
+    assert frame.shape == (303, 58)
+    assert len(features) == schema["predictor_count"] == 54
+    assert "Exertional CP" not in features
     assert set(features).isdisjoint(FORBIDDEN_PREDICTORS)
     for target in TARGETS:
         assert set(frame[target].unique()) == {0, 1}
