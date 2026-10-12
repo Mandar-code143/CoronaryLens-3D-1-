@@ -108,17 +108,16 @@ def test_nested_evaluation_bundle_has_complete_finite_oof_predictions() -> None:
 
 
 def test_model_manifest_and_data_schema_hashes_are_consistent() -> None:
-    import hashlib
+    from infer_models import sha256_match
 
     artifact_dir = ROOT / "data/processed/model_artifacts"
-    sha256 = lambda path: hashlib.sha256(path.read_bytes()).hexdigest()
     manifest = json.loads((artifact_dir / "manifest.json").read_text(encoding="utf-8"))
     registry = json.loads((artifact_dir / "model_registry.json").read_text(encoding="utf-8"))
     evaluation = json.loads((artifact_dir / "evaluation.json").read_text(encoding="utf-8"))
     for name, digest in manifest["files"].items():
-        assert sha256(artifact_dir / name) == digest
-    assert registry["dataset_checksum"] == sha256(ROOT / "data/processed/modeling-data.csv")
+        assert sha256_match(artifact_dir / name, digest)
+    assert sha256_match(ROOT / "data/processed/modeling-data.csv", registry["dataset_checksum"])
     assert evaluation["dataset_checksum"] == registry["dataset_checksum"]
-    schema_hash = sha256(ROOT / "data/processed/feature_schema.json")
-    assert registry["feature_schema_checksum"] == schema_hash
+    schema_hash = registry["feature_schema_checksum"]
+    assert sha256_match(ROOT / "data/processed/feature_schema.json", schema_hash)
     assert evaluation["feature_schema_checksum"] == schema_hash

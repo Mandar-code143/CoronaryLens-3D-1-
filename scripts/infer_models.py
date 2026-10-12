@@ -42,6 +42,23 @@ def sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def sha256_match(path: Path, expected: str) -> bool:
+    """Compare file sha256 with cross-platform CRLF/LF tolerance for text files."""
+    if not path.is_file():
+        return False
+    content = path.read_bytes()
+    if hashlib.sha256(content).hexdigest() == expected:
+        return True
+    if path.suffix in (".csv", ".json", ".txt", ".md"):
+        lf = content.replace(b"\r\n", b"\n")
+        if hashlib.sha256(lf).hexdigest() == expected:
+            return True
+        crlf = lf.replace(b"\n", b"\r\n")
+        if hashlib.sha256(crlf).hexdigest() == expected:
+            return True
+    return False
+
+
 def risk_band(probability: float) -> str:
     """Categorize probability into descriptive risk bands (for decision-support display only)."""
     if probability < 0.33:
@@ -158,14 +175,14 @@ def load_verified_bundle(schema: dict[str, Any]) -> dict[str, Any]:
 
     for rel_name, expected_hash in manifest_files.items():
         listed_path = ARTIFACT_DIR / rel_name
-        if not listed_path.is_file() or sha256(listed_path) != expected_hash:
+        if not sha256_match(listed_path, expected_hash):
             raise ValueError(f"manifest checksum mismatch for {rel_name}")
 
-    if registry.get("dataset_checksum") != current_dataset_hash or evaluation.get("dataset_checksum") != current_dataset_hash:
+    if not sha256_match(csv_path, registry.get("dataset_checksum", "")) or not sha256_match(csv_path, evaluation.get("dataset_checksum", "")):
         raise ValueError("model registry/evaluation dataset checksum does not match current modeling-data.csv")
     if registry.get("feature_schema_version") != schema.get("schema_version") or evaluation.get("feature_schema_version") != schema.get("schema_version"):
         raise ValueError("feature schema version does not match active schema")
-    if registry.get("feature_schema_checksum") != current_schema_hash or evaluation.get("feature_schema_checksum") != current_schema_hash:
+    if not sha256_match(schema_path, registry.get("feature_schema_checksum", "")) or not sha256_match(schema_path, evaluation.get("feature_schema_checksum", "")):
         raise ValueError("feature schema checksum mismatch")
 
     entries = {item.get("target"): item for item in registry.get("targets", []) if isinstance(item, dict)}

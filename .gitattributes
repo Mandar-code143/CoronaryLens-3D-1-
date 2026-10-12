@@ -1,0 +1,7 @@
+# Ensure consistent cross-platform line endings across Linux, Windows, and Docker containers
+* text=auto eol=lf
+*.joblib binary
+*.glb binary
+*.png binary
+*.jpg binary
+*.ico binary
