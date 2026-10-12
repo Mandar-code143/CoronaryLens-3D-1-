@@ -212,7 +212,7 @@ const HeartViewer = forwardRef<ViewerHandle, Props>(function HeartViewer(
         {interactive && hovered && phase.s === 'ready' && <div className="hover-tip" role="status">{hovered.label}{hovered.target ? ` · ${hovered.target} target` : ''}</div>}
       </div>
       {phase.s === 'loading' && (
-        <div className="viewer-state" role="status"><div className="box"><span className="spinner" /><div>Loading anatomical model…</div><div className="bar"><i style={{ width: `${Math.round(phase.p * 100)}%` }} /></div><div className="faint">3.9 MB · served locally</div></div></div>
+        <div className="viewer-state" role="status"><div className="box"><span className="spinner" /><div>Loading anatomical model…</div><div className="bar"><i style={{ width: `${Math.round(phase.p * 100)}%` }} /></div><div className="faint">3.9 MB · high-fidelity 3D asset</div></div></div>
       )}
       {phase.s === 'error' && (
         <div className="viewer-state" role="alert"><div className="box"><strong>{phase.webgl ? '3D view unavailable' : 'Anatomy could not be displayed'}</strong><p className="muted">{phase.msg}</p>{!phase.webgl && <button className="btn sm" onClick={() => setAttempt((a) => a + 1)}>Retry loading</button>}</div></div>

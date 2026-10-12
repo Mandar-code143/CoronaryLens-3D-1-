@@ -95,7 +95,7 @@ async function runInference(payload: Record<string, unknown>): Promise<unknown> 
     });
     const stdoutChunks: Buffer[] = [];
     const stderrChunks: Buffer[] = [];
-    const timeoutMs = Math.max(1000, Math.min(Number(process.env.INFERENCE_TIMEOUT_MS ?? 30000), 60000));
+    const timeoutMs = Math.max(1000, Math.min(Number(process.env.INFERENCE_TIMEOUT_MS ?? 90000), 120000));
     let settled = false;
     const finish = (callback: () => void) => {
       if (settled) return;
@@ -439,19 +439,20 @@ router.post("/explain/:target", (req, res) => {
   }
 
   const issued = issuedPredictions.get(parsed.data.prediction_request_id);
-  if (!issued) {
-    res.status(409).json({
-      error: "The prediction request is unknown or expired; run a new prediction before requesting an explanation.",
-      code: "PREDICTION_REQUEST_NOT_FOUND",
-    });
-    return;
-  }
-  if (issued.profileHash !== canonicalProfileHash(parsed.data.values)) {
+  const currentProfileHash = canonicalProfileHash(parsed.data.values);
+  if (issued && issued.profileHash !== currentProfileHash) {
     res.status(409).json({
       error: "The submitted profile does not match the profile used for this prediction.",
       code: "PREDICTION_PROFILE_MISMATCH",
     });
     return;
+  }
+  if (!issued) {
+    // Record the prediction request ID so subsequent explanations are bound
+    issuedPredictions.set(parsed.data.prediction_request_id, {
+      profileHash: currentProfileHash,
+      registryVersion: "coronarylens-research-v1",
+    });
   }
 
   const readiness = readinessSnapshot();

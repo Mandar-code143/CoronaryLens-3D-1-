@@ -245,7 +245,7 @@ def explain(payload: dict[str, Any]) -> dict[str, Any]:
     submitted_matrix = np.asarray(preprocessor.transform(submitted_frame), dtype=float)
     submitted_probability = float(estimator.predict_proba(submitted_matrix)[0, 1])
 
-    background_size = min(60, len(training))
+    background_size = min(20, len(training))
     background_frame = training[columns].sample(n=background_size, random_state=1431).reset_index(drop=True)
     background_matrix = np.asarray(preprocessor.transform(background_frame), dtype=float)
     if background_matrix.ndim != 2 or submitted_matrix.ndim != 2 or background_matrix.shape[1] != submitted_matrix.shape[1]:
@@ -257,10 +257,10 @@ def explain(payload: dict[str, Any]) -> dict[str, Any]:
         seed=1431,
     )
     transformed_count = int(submitted_matrix.shape[1])
-    # Six forward/reverse feature permutations; stable seed for reproducible demos.
+    # Three forward/reverse feature permutations; stable seed for reproducible demos.
     shap_result = explainer(
         submitted_matrix,
-        max_evals=(2 * transformed_count + 1) * 6,
+        max_evals=(2 * transformed_count + 1) * 3,
         silent=True,
     )
     shap_values = np.asarray(shap_result.values, dtype=float).reshape(-1)
