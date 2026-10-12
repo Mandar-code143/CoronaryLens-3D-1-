@@ -31,7 +31,7 @@ export default function Inputs() {
 
   const shown = [...groups.entries()].filter(([g]) => !active || g === active);
   return (
-    <div className="page">
+    <div className="page page-inputs">
       <PageHead eyebrow="Step 1 of 2" title="Clinical inputs">Enter or load a profile using the source-cohort predictor schema ({schema.predictor_count} fields). Variable meanings and units are shown only as the source documents them; where a unit is not declared, none is implied.</PageHead>
       <div className="inputs-layout">
         <aside className="side" aria-label="Profile progress">
@@ -45,21 +45,27 @@ export default function Inputs() {
               {s.demoState.status === 'loading' ? <Spinner /> : <Beaker size={15} />}Load synthetic demo profile
             </button>
             <p className="faint" style={{ fontSize: 12 }}>Per-feature median/mode of the training cohort. Not a real person.</p>
-            {samplesQ.data?.samples && (
+            {samplesQ.data?.samples && samplesQ.data.samples.length > 0 && (
               <div style={{ marginTop: 4, display: 'grid', gap: 6 }}>
                 <span className="faint" style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   Representative Patient Cases
                 </span>
-                {samplesQ.data.samples.slice(0, 3).map((sample: { id: string; label: string; values: Record<string, unknown> }) => (
-                  <button
-                    key={sample.id}
-                    className="btn sm"
-                    style={{ justifyContent: 'flex-start', textAlign: 'left', fontSize: 12, padding: '6px 8px' }}
-                    onClick={() => s.loadProfile(sample.values as Values, sample.label)}
-                  >
-                    <span>{sample.label}</span>
-                  </button>
-                ))}
+                {samplesQ.data.samples.slice(0, 3).map((sample: { id: string | number; label?: string; ground_truth?: Record<string, number>; values: Record<string, unknown> }) => {
+                  const isCadPos = sample.ground_truth?.CAD === 1;
+                  const caseLabel = sample.label || `Patient #${sample.id} (${isCadPos ? 'High Risk' : 'Normal'})`;
+                  return (
+                    <button
+                      key={sample.id}
+                      className="btn sm"
+                      style={{ justifyContent: 'space-between', textAlign: 'left', fontSize: 12, padding: '6px 10px', height: 'auto', width: '100%' }}
+                      onClick={() => s.loadProfile(sample.values as Values, caseLabel)}
+                      title={`Load case #${sample.id}`}
+                    >
+                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{caseLabel}</span>
+                      <span className="badge accent" style={{ fontSize: 10, height: 18, padding: '0 5px', flexShrink: 0 }}>Load</span>
+                    </button>
+                  );
+                })}
               </div>
             )}
             {s.demoState.status === 'error' && <Notice tone="bad" title="Could not load demo profile">{s.demoState.problem.message}</Notice>}
@@ -73,7 +79,7 @@ export default function Inputs() {
           </nav>
         </aside>
 
-        <div>
+        <div className="inputs-main">
           {s.isDemo && <div style={{ marginBottom: 18 }}><Notice tone="warn" title="Synthetic demo profile loaded">{s.demoLabel ?? 'Synthetic cohort summary'} — editing any field converts this into a custom profile.</Notice></div>}
           {shown.map(([g, fs]) => { const visible = fs.filter(match); if (!visible.length) return null; return (
             <section key={g} className="field-group" id={`g-${g}`} aria-labelledby={`h-${g}`}>
@@ -93,11 +99,12 @@ export default function Inputs() {
 
 function Field({ f, value, touched, onChange, onBlur }: { f: FeatureDefinition; value: unknown; touched: boolean; onChange: (v: unknown) => void; onBlur: () => void }) {
   const err = touched ? validateFeature(f, value) : undefined; const id = `f-${f.name.replace(/\W+/g, '_')}`; const hint = f.type === 'numeric' && f.minimum != null && f.maximum != null ? `Training range ${f.minimum}–${f.maximum}${f.unit ? ` ${f.unit}` : ''}` : f.unit ? `Unit: ${f.unit}` : '';
+  const numDisplay = hasValue(value) ? (typeof value === 'number' && !Number.isInteger(value) && String(value).split('.')[1]?.length > 3 ? String(Math.round((value as number) * 100) / 100) : String(value)) : '';
   return (
     <div className={`field${err ? ' invalid' : ''}`}>
       <label htmlFor={id}><span>{f.label}</span>{f.required && <span className="req">required</span>}</label>
       {f.type === 'numeric' ? (
-        <input id={id} type="number" inputMode="decimal" step="any" value={hasValue(value) ? String(value) : ''} aria-invalid={!!err} aria-describedby={`${id}-d`}
+        <input id={id} type="number" inputMode="decimal" step="any" value={numDisplay} aria-invalid={!!err} aria-describedby={`${id}-d`}
           onChange={(e) => onChange(e.target.value === '' ? '' : Number(e.target.value))} onBlur={onBlur} />
       ) : (
         <select id={id} value={hasValue(value) ? String(value) : ''} aria-invalid={!!err} aria-describedby={`${id}-d`} onChange={(e) => onChange(e.target.value)} onBlur={onBlur}>
