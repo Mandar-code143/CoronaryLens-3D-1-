@@ -15,4 +15,32 @@ app.listen(port, (err) => {
   }
 
   logger.info({ port }, "Server listening");
+  startKeepAlive();
 });
+
+function startKeepAlive() {
+  const externalUrl =
+    process.env["RENDER_EXTERNAL_URL"] ??
+    process.env["APP_URL"] ??
+    "https://coronarylens-3d.onrender.com";
+
+  const targetUrl = externalUrl.endsWith("/api/health")
+    ? externalUrl
+    : `${externalUrl.replace(/\/+$/, "")}/api/health`;
+
+  // Render spins down free tier instances after 15 minutes; ping every 10 minutes
+  const PING_INTERVAL_MS = 10 * 60 * 1000;
+
+  if (process.env["NODE_ENV"] === "production" || process.env["ENABLE_KEEP_ALIVE"] === "true") {
+    logger.info({ targetUrl, intervalMinutes: 10 }, "Keep-alive ping service initiated");
+
+    setInterval(async () => {
+      try {
+        const response = await fetch(targetUrl);
+        logger.info({ status: response.status, targetUrl }, "Keep-alive ping sent");
+      } catch (error) {
+        logger.warn({ error: error instanceof Error ? error.message : String(error) }, "Keep-alive ping failed");
+      }
+    }, PING_INTERVAL_MS);
+  }
+}
