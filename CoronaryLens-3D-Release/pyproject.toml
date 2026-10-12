@@ -1,0 +1,20 @@
+[project]
+name = "coronarylens-research"
+version = "0.2.0"
+description = "Reproducible research modeling and inference pipeline for CoronaryLens-3D"
+requires-python = ">=3.13,<3.14"
+dependencies = [
+  "numpy==2.3.5",
+  "joblib==1.5.3",
+  "openpyxl==3.1.5",
+  "pandas==2.2.3",
+  "scikit-learn==1.8.0",
+  "shap==0.50.0",
+]
+
+[project.optional-dependencies]
+test = ["pytest==9.0.2"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

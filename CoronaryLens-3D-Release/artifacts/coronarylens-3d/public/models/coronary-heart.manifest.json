@@ -1,0 +1,257 @@
+{
+  "source": "Z-Anatomy Startup.blend (Models-of-human-anatomy repo, master)",
+  "license": "CC BY-SA 4.0 (Z-Anatomy); derived from BodyParts3D, CC BY-SA 2.1 JP",
+  "world_scale": 10.0,
+  "coronary_caliber_multiplier": 1.8,
+  "bounds_m": {
+    "min": [
+      -0.04514,
+      -0.08163,
+      1.2051
+    ],
+    "max": [
+      0.08986,
+      0.04944,
+      1.41526
+    ]
+  },
+  "glb_bytes": 3879864,
+  "total_vertices": 107639,
+  "total_triangles": 212271,
+  "nodes": {
+    "heart_left_ventricle": {
+      "label": "Left ventricle",
+      "group": "heart",
+      "kind": "chamber",
+      "target": null,
+      "source": "Left ventricle",
+      "vertices": 11306,
+      "triangles": 22252
+    },
+    "heart_right_ventricle": {
+      "label": "Right ventricle",
+      "group": "heart",
+      "kind": "chamber",
+      "target": null,
+      "source": "Right ventricle",
+      "vertices": 11328,
+      "triangles": 22322
+    },
+    "heart_left_atrium": {
+      "label": "Left atrium",
+      "group": "heart",
+      "kind": "chamber",
+      "target": null,
+      "source": "Left atrium",
+      "vertices": 2609,
+      "triangles": 5105
+    },
+    "heart_right_atrium": {
+      "label": "Right atrium",
+      "group": "heart",
+      "kind": "chamber",
+      "target": null,
+      "source": "Right atrium",
+      "vertices": 11458,
+      "triangles": 22682
+    },
+    "aorta_ascending": {
+      "label": "Ascending aorta",
+      "group": "aorta",
+      "kind": "vessel",
+      "target": null,
+      "source": "Ascending aorta",
+      "vertices": 300,
+      "triangles": 576
+    },
+    "aorta_arch": {
+      "label": "Aortic arch",
+      "group": "aorta",
+      "kind": "vessel",
+      "target": null,
+      "source": "Aortic arch",
+      "vertices": 300,
+      "triangles": 576
+    },
+    "aorta_descending": {
+      "label": "Descending thoracic aorta",
+      "group": "aorta",
+      "kind": "vessel",
+      "target": null,
+      "source": "Thoracic aorta",
+      "vertices": 444,
+      "triangles": 864
+    },
+    "aorta_brachiocephalic": {
+      "label": "Brachiocephalic trunk",
+      "group": "aorta",
+      "kind": "vessel",
+      "target": null,
+      "source": "Brachiocephalic trunk",
+      "vertices": 300,
+      "triangles": 576
+    },
+    "pulmonary_trunk": {
+      "label": "Pulmonary trunk",
+      "group": "pulmonary",
+      "kind": "vessel",
+      "target": null,
+      "source": "Pulmonary trunk",
+      "vertices": 138,
+      "triangles": 230
+    },
+    "pulmonary_bifurcation": {
+      "label": "Pulmonary trunk bifurcation",
+      "group": "pulmonary",
+      "kind": "vessel",
+      "target": null,
+      "source": "Bifurcation of pulmonary trunk",
+      "vertices": 600,
+      "triangles": 1152
+    },
+    "pulmonary_left_artery": {
+      "label": "Left pulmonary artery",
+      "group": "pulmonary",
+      "kind": "vessel",
+      "target": null,
+      "source": "Left pulmonary artery",
+      "vertices": 1020,
+      "triangles": 2016
+    },
+    "pulmonary_right_artery": {
+      "label": "Right pulmonary artery",
+      "group": "pulmonary",
+      "kind": "vessel",
+      "target": null,
+      "source": "Right pulmonary artery",
+      "vertices": 300,
+      "triangles": 576
+    },
+    "vein_svc": {
+      "label": "Superior vena cava",
+      "group": "veins",
+      "kind": "vessel",
+      "target": null,
+      "source": "Superior vena cava",
+      "vertices": 156,
+      "triangles": 288
+    },
+    "vein_pulm_rs": {
+      "label": "Right superior pulmonary vein",
+      "group": "veins",
+      "kind": "vessel",
+      "target": null,
+      "source": "Right superior pulmonary vein",
+      "vertices": 876,
+      "triangles": 1728
+    },
+    "vein_pulm_ri": {
+      "label": "Right inferior pulmonary vein",
+      "group": "veins",
+      "kind": "vessel",
+      "target": null,
+      "source": "Right inferior pulmonary vein",
+      "vertices": 312,
+      "triangles": 576
+    },
+    "vein_pulm_ls": {
+      "label": "Left superior pulmonary vein",
+      "group": "veins",
+      "kind": "vessel",
+      "target": null,
+      "source": "Left superior pulmonary vein",
+      "vertices": 468,
+      "triangles": 864
+    },
+    "vein_pulm_li": {
+      "label": "Left inferior pulmonary vein",
+      "group": "veins",
+      "kind": "vessel",
+      "target": null,
+      "source": "Left inferior pulmonary vein",
+      "vertices": 456,
+      "triangles": 864
+    },
+    "coronary_left_main": {
+      "label": "Left main coronary artery",
+      "group": "coronary",
+      "kind": "coronary",
+      "target": null,
+      "source": "Left coronary artery",
+      "vertices": 300,
+      "triangles": 576
+    },
+    "coronary_lad": {
+      "label": "Left anterior descending (anterior interventricular) artery",
+      "group": "coronary",
+      "kind": "coronary",
+      "target": "LAD",
+      "source": "Anterior interventricular artery",
+      "vertices": 5832,
+      "triangles": 11520
+    },
+    "coronary_lad_septal": {
+      "label": "Septal branches of the LAD",
+      "group": "coronary",
+      "kind": "coronary",
+      "target": "LAD",
+      "source": "Septal branches of anterior interventricular artery",
+      "vertices": 3528,
+      "triangles": 6912
+    },
+    "coronary_lcx": {
+      "label": "Left circumflex artery",
+      "group": "coronary",
+      "kind": "coronary",
+      "target": "LCX",
+      "source": "Circumflex artery of heart",
+      "vertices": 8280,
+      "triangles": 16416
+    },
+    "coronary_rca": {
+      "label": "Right coronary artery",
+      "group": "coronary",
+      "kind": "coronary",
+      "target": "RCA",
+      "source": "Right coronary artery",
+      "vertices": 13704,
+      "triangles": 27072
+    },
+    "coronary_rca_branch": {
+      "label": "Right inferolateral branch of the RCA",
+      "group": "coronary",
+      "kind": "coronary",
+      "target": "RCA",
+      "source": "Right inferolateral branch of right coronary artery",
+      "vertices": 9312,
+      "triangles": 18432
+    },
+    "cardiac_vein_great": {
+      "label": "Great cardiac vein",
+      "group": "cardiac_veins",
+      "kind": "vein",
+      "target": null,
+      "source": "Great cardiac vein",
+      "vertices": 7440,
+      "triangles": 14688
+    },
+    "cardiac_vein_middle": {
+      "label": "Middle cardiac vein",
+      "group": "cardiac_veins",
+      "kind": "vein",
+      "target": null,
+      "source": "Middle cardiac vein",
+      "vertices": 16140,
+      "triangles": 31968
+    },
+    "cardiac_coronary_sinus": {
+      "label": "Coronary sinus",
+      "group": "cardiac_veins",
+      "kind": "vein",
+      "target": null,
+      "source": "Coronary sinus",
+      "vertices": 732,
+      "triangles": 1440
+    }
+  }
+}

@@ -1,0 +1,838 @@
+{
+  "schema_version": "uci411-source-v2-display-normalization",
+  "source": "UCI Machine Learning Repository, dataset 411",
+  "predictor_count": 55,
+  "forbidden_predictors": [
+    "CAD",
+    "Cath",
+    "LAD",
+    "LCX",
+    "RCA"
+  ],
+  "predictors": [
+    {
+      "name": "Age",
+      "label": "Age",
+      "description": "Age recorded for the participant in the source cohort.",
+      "group": "Demographics",
+      "type": "numeric",
+      "required": true,
+      "unit": null,
+      "minimum": 30.0,
+      "maximum": 86.0,
+      "categories": [],
+      "semantics_verified": false
+    },
+    {
+      "name": "Weight",
+      "label": "Weight",
+      "description": "Weight measurement as recorded; the source workbook does not declare a unit.",
+      "group": "Demographics",
+      "type": "numeric",
+      "required": true,
+      "unit": null,
+      "minimum": 48.0,
+      "maximum": 120.0,
+      "categories": [],
+      "semantics_verified": false
+    },
+    {
+      "name": "Length",
+      "label": "Height / length",
+      "description": "Length measurement as recorded; the source workbook does not declare a unit.",
+      "group": "Demographics",
+      "type": "numeric",
+      "required": true,
+      "unit": null,
+      "minimum": 140.0,
+      "maximum": 188.0,
+      "categories": [],
+      "semantics_verified": false
+    },
+    {
+      "name": "Sex",
+      "label": "Sex",
+      "description": "Source category spelling normalized from 'Fmale' to 'Female'; source label otherwise retained.",
+      "group": "Demographics",
+      "type": "categorical",
+      "required": true,
+      "unit": null,
+      "minimum": null,
+      "maximum": null,
+      "categories": [
+        "Female",
+        "Male"
+      ],
+      "semantics_verified": false
+    },
+    {
+      "name": "BMI",
+      "label": "Body mass index (BMI)",
+      "description": "Body mass index value as recorded; source units were not provided in the workbook.",
+      "group": "Demographics",
+      "type": "numeric",
+      "required": true,
+      "unit": null,
+      "minimum": 18.115412710007302,
+      "maximum": 40.90065778377467,
+      "categories": [],
+      "semantics_verified": false
+    },
+    {
+      "name": "DM",
+      "label": "Diabetes mellitus (DM)",
+      "description": "Binary source-coded diabetes mellitus field; source-specific coding has not been independently verified.",
+      "group": "Symptoms & examination",
+      "type": "categorical",
+      "required": true,
+      "unit": null,
+      "minimum": null,
+      "maximum": null,
+      "categories": [
+        "0",
+        "1"
+      ],
+      "semantics_verified": false
+    },
+    {
+      "name": "HTN",
+      "label": "Hypertension (HTN)",
+      "description": "Binary source-coded hypertension field; source-specific coding has not been independently verified.",
+      "group": "Symptoms & examination",
+      "type": "categorical",
+      "required": true,
+      "unit": null,
+      "minimum": null,
+      "maximum": null,
+      "categories": [
+        "0",
+        "1"
+      ],
+      "semantics_verified": false
+    },
+    {
+      "name": "Current Smoker",
+      "label": "Current smoking status",
+      "description": "Source-coded current smoking status.",
+      "group": "Symptoms & examination",
+      "type": "categorical",
+      "required": true,
+      "unit": null,
+      "minimum": null,
+      "maximum": null,
+      "categories": [
+        "0",
+        "1"
+      ],
+      "semantics_verified": false
+    },
+    {
+      "name": "EX-Smoker",
+      "label": "Former smoking status",
+      "description": "Source-coded former/ex-smoker status.",
+      "group": "Symptoms & examination",
+      "type": "categorical",
+      "required": true,
+      "unit": null,
+      "minimum": null,
+      "maximum": null,
+      "categories": [
+        "0",
+        "1"
+      ],
+      "semantics_verified": false
+    },
+    {
+      "name": "FH",
+      "label": "Family history (FH)",
+      "description": "The source's FH field; the exact family-history definition is not specified in the workbook.",
+      "group": "Symptoms & examination",
+      "type": "categorical",
+      "required": true,
+      "unit": null,
+      "minimum": null,
+      "maximum": null,
+      "categories": [
+        "0",
+        "1"
+      ],
+      "semantics_verified": false
+    },
+    {
+      "name": "Obesity",
+      "label": "Obesity",
+      "description": "Source-coded obesity field; diagnostic definition is not specified in the workbook.",
+      "group": "Symptoms & examination",
+      "type": "categorical",
+      "required": true,
+      "unit": null,
+      "minimum": null,
+      "maximum": null,
+      "categories": [
+        "N",
+        "Y"
+      ],
+      "semantics_verified": false
+    },
+    {
+      "name": "CRF",
+      "label": "Chronic renal failure (CRF)",
+      "description": "Common expansion of CRF; source-specific definition and coding require review.",
+      "group": "Symptoms & examination",
+      "type": "categorical",
+      "required": true,
+      "unit": null,
+      "minimum": null,
+      "maximum": null,
+      "categories": [
+        "N",
+        "Y"
+      ],
+      "semantics_verified": false
+    },
+    {
+      "name": "CVA",
+      "label": "Cerebrovascular accident (CVA)",
+      "description": "Common expansion of CVA; source-specific definition and coding require review.",
+      "group": "Symptoms & examination",
+      "type": "categorical",
+      "required": true,
+      "unit": null,
+      "minimum": null,
+      "maximum": null,
+      "categories": [
+        "N",
+        "Y"
+      ],
+      "semantics_verified": false
+    },
+    {
+      "name": "Airway disease",
+      "label": "Airway disease",
+      "description": "Source-coded airway disease field.",
+      "group": "Symptoms & examination",
+      "type": "categorical",
+      "required": true,
+      "unit": null,
+      "minimum": null,
+      "maximum": null,
+      "categories": [
+        "N",
+        "Y"
+      ],
+      "semantics_verified": false
+    },
+    {
+      "name": "Thyroid Disease",
+      "label": "Thyroid disease",
+      "description": "Source-coded thyroid disease field.",
+      "group": "Symptoms & examination",
+      "type": "categorical",
+      "required": true,
+      "unit": null,
+      "minimum": null,
+      "maximum": null,
+      "categories": [
+        "N",
+        "Y"
+      ],
+      "semantics_verified": false
+    },
+    {
+      "name": "CHF",
+      "label": "Congestive heart failure (CHF)",
+      "description": "Common expansion of CHF; source-specific definition and coding require review.",
+      "group": "Symptoms & examination",
+      "type": "categorical",
+      "required": true,
+      "unit": null,
+      "minimum": null,
+      "maximum": null,
+      "categories": [
+        "N",
+        "Y"
+      ],
+      "semantics_verified": false
+    },
+    {
+      "name": "DLP",
+      "label": "Dyslipidemia (DLP)",
+      "description": "Common expansion of DLP; source-specific definition and coding require review.",
+      "group": "Symptoms & examination",
+      "type": "categorical",
+      "required": true,
+      "unit": null,
+      "minimum": null,
+      "maximum": null,
+      "categories": [
+        "N",
+        "Y"
+      ],
+      "semantics_verified": false
+    },
+    {
+      "name": "BP",
+      "label": "Blood pressure (BP)",
+      "description": "Blood pressure value as recorded; the source workbook does not declare measurement units or convention.",
+      "group": "Symptoms & examination",
+      "type": "numeric",
+      "required": true,
+      "unit": null,
+      "minimum": 90.0,
+      "maximum": 190.0,
+      "categories": [],
+      "semantics_verified": false
+    },
+    {
+      "name": "PR",
+      "label": "Pulse rate (PR)",
+      "description": "Pulse-rate value as recorded; the source workbook does not declare units.",
+      "group": "Symptoms & examination",
+      "type": "numeric",
+      "required": true,
+      "unit": null,
+      "minimum": 50.0,
+      "maximum": 110.0,
+      "categories": [],
+      "semantics_verified": false
+    },
+    {
+      "name": "Edema",
+      "label": "Edema",
+      "description": "Source-coded edema field.",
+      "group": "Symptoms & examination",
+      "type": "categorical",
+      "required": true,
+      "unit": null,
+      "minimum": null,
+      "maximum": null,
+      "categories": [
+        "0",
+        "1"
+      ],
+      "semantics_verified": false
+    },
+    {
+      "name": "Weak Peripheral Pulse",
+      "label": "Weak peripheral pulse",
+      "description": "Source-coded examination finding.",
+      "group": "Symptoms & examination",
+      "type": "categorical",
+      "required": true,
+      "unit": null,
+      "minimum": null,
+      "maximum": null,
+      "categories": [
+        "N",
+        "Y"
+      ],
+      "semantics_verified": false
+    },
+    {
+      "name": "Lung rales",
+      "label": "Lung rales",
+      "description": "Source-coded examination finding.",
+      "group": "Symptoms & examination",
+      "type": "categorical",
+      "required": true,
+      "unit": null,
+      "minimum": null,
+      "maximum": null,
+      "categories": [
+        "N",
+        "Y"
+      ],
+      "semantics_verified": false
+    },
+    {
+      "name": "Systolic Murmur",
+      "label": "Systolic murmur",
+      "description": "Source-coded examination finding.",
+      "group": "Symptoms & examination",
+      "type": "categorical",
+      "required": true,
+      "unit": null,
+      "minimum": null,
+      "maximum": null,
+      "categories": [
+        "N",
+        "Y"
+      ],
+      "semantics_verified": false
+    },
+    {
+      "name": "Diastolic Murmur",
+      "label": "Diastolic murmur",
+      "description": "Source-coded examination finding.",
+      "group": "Symptoms & examination",
+      "type": "categorical",
+      "required": true,
+      "unit": null,
+      "minimum": null,
+      "maximum": null,
+      "categories": [
+        "N",
+        "Y"
+      ],
+      "semantics_verified": false
+    },
+    {
+      "name": "Typical Chest Pain",
+      "label": "Typical chest pain",
+      "description": "Source-coded symptom field.",
+      "group": "Symptoms & examination",
+      "type": "categorical",
+      "required": true,
+      "unit": null,
+      "minimum": null,
+      "maximum": null,
+      "categories": [
+        "0",
+        "1"
+      ],
+      "semantics_verified": false
+    },
+    {
+      "name": "Dyspnea",
+      "label": "Dyspnea",
+      "description": "Shortness of breath symptom field as coded by the source.",
+      "group": "Symptoms & examination",
+      "type": "categorical",
+      "required": true,
+      "unit": null,
+      "minimum": null,
+      "maximum": null,
+      "categories": [
+        "N",
+        "Y"
+      ],
+      "semantics_verified": false
+    },
+    {
+      "name": "Function Class",
+      "label": "Functional class",
+      "description": "Source-coded functional-class field; category definitions require codebook review.",
+      "group": "Symptoms & examination",
+      "type": "ordinal",
+      "required": true,
+      "unit": null,
+      "minimum": null,
+      "maximum": null,
+      "categories": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "semantics_verified": false
+    },
+    {
+      "name": "Atypical",
+      "label": "Atypical chest pain",
+      "description": "Source-coded symptom indicator; category definitions require codebook review.",
+      "group": "Symptoms & examination",
+      "type": "categorical",
+      "required": true,
+      "unit": null,
+      "minimum": null,
+      "maximum": null,
+      "categories": [
+        "N",
+        "Y"
+      ],
+      "semantics_verified": false
+    },
+    {
+      "name": "Nonanginal",
+      "label": "Non-anginal pain",
+      "description": "Source-coded symptom indicator; category definitions require codebook review.",
+      "group": "Symptoms & examination",
+      "type": "categorical",
+      "required": true,
+      "unit": null,
+      "minimum": null,
+      "maximum": null,
+      "categories": [
+        "N",
+        "Y"
+      ],
+      "semantics_verified": false
+    },
+    {
+      "name": "Exertional CP",
+      "label": "Exertional chest pain",
+      "description": "Source-coded exertional chest-pain indicator.",
+      "group": "Symptoms & examination",
+      "type": "categorical",
+      "required": true,
+      "unit": null,
+      "minimum": null,
+      "maximum": null,
+      "categories": [
+        "N"
+      ],
+      "semantics_verified": false
+    },
+    {
+      "name": "LowTH Ang",
+      "label": "Low-threshold angina",
+      "description": "Source variable label expanded for readability; coding definition requires review.",
+      "group": "Symptoms & examination",
+      "type": "categorical",
+      "required": true,
+      "unit": null,
+      "minimum": null,
+      "maximum": null,
+      "categories": [
+        "N",
+        "Y"
+      ],
+      "semantics_verified": false
+    },
+    {
+      "name": "Q Wave",
+      "label": "Q wave (ECG)",
+      "description": "Source-coded ECG finding.",
+      "group": "ECG",
+      "type": "categorical",
+      "required": true,
+      "unit": null,
+      "minimum": null,
+      "maximum": null,
+      "categories": [
+        "0",
+        "1"
+      ],
+      "semantics_verified": false
+    },
+    {
+      "name": "St Elevation",
+      "label": "ST elevation (ECG)",
+      "description": "Source-coded ECG finding; measurement/coding convention requires review.",
+      "group": "ECG",
+      "type": "categorical",
+      "required": true,
+      "unit": null,
+      "minimum": null,
+      "maximum": null,
+      "categories": [
+        "0",
+        "1"
+      ],
+      "semantics_verified": false
+    },
+    {
+      "name": "St Depression",
+      "label": "ST depression (ECG)",
+      "description": "Source-coded ECG finding; measurement/coding convention requires review.",
+      "group": "ECG",
+      "type": "categorical",
+      "required": true,
+      "unit": null,
+      "minimum": null,
+      "maximum": null,
+      "categories": [
+        "0",
+        "1"
+      ],
+      "semantics_verified": false
+    },
+    {
+      "name": "Tinversion",
+      "label": "T-wave inversion (ECG)",
+      "description": "Source-coded ECG finding.",
+      "group": "ECG",
+      "type": "categorical",
+      "required": true,
+      "unit": null,
+      "minimum": null,
+      "maximum": null,
+      "categories": [
+        "0",
+        "1"
+      ],
+      "semantics_verified": false
+    },
+    {
+      "name": "LVH",
+      "label": "Left ventricular hypertrophy (LVH)",
+      "description": "Common expansion of LVH; source-specific coding requires review.",
+      "group": "ECG",
+      "type": "categorical",
+      "required": true,
+      "unit": null,
+      "minimum": null,
+      "maximum": null,
+      "categories": [
+        "N",
+        "Y"
+      ],
+      "semantics_verified": false
+    },
+    {
+      "name": "Poor R Progression",
+      "label": "Poor R-wave progression (ECG)",
+      "description": "Source-coded ECG finding.",
+      "group": "ECG",
+      "type": "categorical",
+      "required": true,
+      "unit": null,
+      "minimum": null,
+      "maximum": null,
+      "categories": [
+        "N",
+        "Y"
+      ],
+      "semantics_verified": false
+    },
+    {
+      "name": "BBB",
+      "label": "Bundle branch block (BBB)",
+      "description": "Source-coded ECG category; left/right categories are retained from the source.",
+      "group": "ECG",
+      "type": "categorical",
+      "required": true,
+      "unit": null,
+      "minimum": null,
+      "maximum": null,
+      "categories": [
+        "LBBB",
+        "N",
+        "RBBB"
+      ],
+      "semantics_verified": false
+    },
+    {
+      "name": "FBS",
+      "label": "Fasting blood sugar (FBS)",
+      "description": "Source label expansion; source measurement units are not declared in the workbook.",
+      "group": "Laboratory & echocardiography",
+      "type": "numeric",
+      "required": true,
+      "unit": null,
+      "minimum": 62.0,
+      "maximum": 400.0,
+      "categories": [],
+      "semantics_verified": false
+    },
+    {
+      "name": "CR",
+      "label": "Creatinine (CR)",
+      "description": "Common expansion of CR in this dataset context; verify against the original study codebook. Units are not documented.",
+      "group": "Laboratory & echocardiography",
+      "type": "numeric",
+      "required": true,
+      "unit": null,
+      "minimum": 0.5,
+      "maximum": 2.2,
+      "categories": [],
+      "semantics_verified": false
+    },
+    {
+      "name": "TG",
+      "label": "Triglycerides (TG)",
+      "description": "Source laboratory value; units are not documented in the workbook.",
+      "group": "Laboratory & echocardiography",
+      "type": "numeric",
+      "required": true,
+      "unit": null,
+      "minimum": 37.0,
+      "maximum": 1050.0,
+      "categories": [],
+      "semantics_verified": false
+    },
+    {
+      "name": "LDL",
+      "label": "Low-density lipoprotein (LDL)",
+      "description": "Source laboratory value; units are not documented in the workbook.",
+      "group": "Laboratory & echocardiography",
+      "type": "numeric",
+      "required": true,
+      "unit": null,
+      "minimum": 18.0,
+      "maximum": 232.0,
+      "categories": [],
+      "semantics_verified": false
+    },
+    {
+      "name": "HDL",
+      "label": "High-density lipoprotein (HDL)",
+      "description": "Source laboratory value; units are not documented in the workbook.",
+      "group": "Laboratory & echocardiography",
+      "type": "numeric",
+      "required": true,
+      "unit": null,
+      "minimum": 15.9,
+      "maximum": 111.0,
+      "categories": [],
+      "semantics_verified": false
+    },
+    {
+      "name": "BUN",
+      "label": "Blood urea nitrogen (BUN)",
+      "description": "Source laboratory value; units are not documented in the workbook.",
+      "group": "Laboratory & echocardiography",
+      "type": "numeric",
+      "required": true,
+      "unit": null,
+      "minimum": 6.0,
+      "maximum": 52.0,
+      "categories": [],
+      "semantics_verified": false
+    },
+    {
+      "name": "ESR",
+      "label": "Erythrocyte sedimentation rate (ESR)",
+      "description": "Source laboratory value; units and measurement convention are not documented.",
+      "group": "Laboratory & echocardiography",
+      "type": "numeric",
+      "required": true,
+      "unit": null,
+      "minimum": 1.0,
+      "maximum": 90.0,
+      "categories": [],
+      "semantics_verified": false
+    },
+    {
+      "name": "HB",
+      "label": "Hemoglobin (HB)",
+      "description": "Source laboratory value; units are not documented in the workbook.",
+      "group": "Laboratory & echocardiography",
+      "type": "numeric",
+      "required": true,
+      "unit": null,
+      "minimum": 8.9,
+      "maximum": 17.6,
+      "categories": [],
+      "semantics_verified": false
+    },
+    {
+      "name": "K",
+      "label": "Potassium (K)",
+      "description": "Source laboratory value; units are not documented in the workbook.",
+      "group": "Laboratory & echocardiography",
+      "type": "numeric",
+      "required": true,
+      "unit": null,
+      "minimum": 3.0,
+      "maximum": 6.6,
+      "categories": [],
+      "semantics_verified": false
+    },
+    {
+      "name": "Na",
+      "label": "Sodium (Na)",
+      "description": "Source laboratory value; units are not documented in the workbook.",
+      "group": "Laboratory & echocardiography",
+      "type": "numeric",
+      "required": true,
+      "unit": null,
+      "minimum": 128.0,
+      "maximum": 156.0,
+      "categories": [],
+      "semantics_verified": false
+    },
+    {
+      "name": "WBC",
+      "label": "White blood cell count (WBC)",
+      "description": "Source laboratory value; units are not documented in the workbook.",
+      "group": "Laboratory & echocardiography",
+      "type": "numeric",
+      "required": true,
+      "unit": null,
+      "minimum": 3700.0,
+      "maximum": 18000.0,
+      "categories": [],
+      "semantics_verified": false
+    },
+    {
+      "name": "Lymph",
+      "label": "Lymphocyte value",
+      "description": "Source laboratory field; whether this is a count, percentage or another encoding requires codebook review.",
+      "group": "Laboratory & echocardiography",
+      "type": "numeric",
+      "required": true,
+      "unit": null,
+      "minimum": 7.0,
+      "maximum": 60.0,
+      "categories": [],
+      "semantics_verified": false
+    },
+    {
+      "name": "Neut",
+      "label": "Neutrophil value",
+      "description": "Source laboratory field; whether this is a count, percentage or another encoding requires codebook review.",
+      "group": "Laboratory & echocardiography",
+      "type": "numeric",
+      "required": true,
+      "unit": null,
+      "minimum": 32.0,
+      "maximum": 89.0,
+      "categories": [],
+      "semantics_verified": false
+    },
+    {
+      "name": "PLT",
+      "label": "Platelet count (PLT)",
+      "description": "Source laboratory value; units are not documented in the workbook.",
+      "group": "Laboratory & echocardiography",
+      "type": "numeric",
+      "required": true,
+      "unit": null,
+      "minimum": 25.0,
+      "maximum": 742.0,
+      "categories": [],
+      "semantics_verified": false
+    },
+    {
+      "name": "EF-TTE",
+      "label": "Ejection fraction (TTE)",
+      "description": "Ejection-fraction value as recorded from transthoracic echocardiography; source units/scale require review.",
+      "group": "Laboratory & echocardiography",
+      "type": "numeric",
+      "required": true,
+      "unit": null,
+      "minimum": 15.0,
+      "maximum": 60.0,
+      "categories": [],
+      "semantics_verified": false
+    },
+    {
+      "name": "Region RWMA",
+      "label": "Regional wall-motion abnormality (RWMA)",
+      "description": "Source-coded echocardiographic finding; specific region codes require review.",
+      "group": "Laboratory & echocardiography",
+      "type": "ordinal",
+      "required": true,
+      "unit": null,
+      "minimum": null,
+      "maximum": null,
+      "categories": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4"
+      ],
+      "semantics_verified": false
+    },
+    {
+      "name": "VHD",
+      "label": "Valvular heart disease (VHD)",
+      "description": "Source-coded valvular heart disease category; code meanings are retained as recorded.",
+      "group": "Laboratory & echocardiography",
+      "type": "categorical",
+      "required": true,
+      "unit": null,
+      "minimum": null,
+      "maximum": null,
+      "categories": [
+        "Moderate",
+        "N",
+        "Severe",
+        "mild"
+      ],
+      "semantics_verified": false
+    }
+  ]
+}

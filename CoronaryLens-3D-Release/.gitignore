@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+.venv/
+venv/
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Build products and local state
+**/dist/
+**/coverage/
+*.tsbuildinfo
+*.log
+.env
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db
+
+# Temporary alternate model artifact output directory. The reviewed, checksummed
+# research bundle under data/processed/model_artifacts/ is intentionally versioned.
+artifacts/model-artifacts/
+
+# Replit conversation uploads / scratch context are not part of the distributable app
+.conversation/
+.agents/

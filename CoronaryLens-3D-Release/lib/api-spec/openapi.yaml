@@ -1,0 +1,494 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: coronarylens
+    description: CoronaryLens model, prediction, and research evidence operations
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /health:
+    get:
+      operationId: healthStatus
+      tags: [health]
+      summary: API process health
+      responses:
+        "200":
+          description: API process is responding
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /ready:
+    get:
+      operationId: getReadiness
+      tags: [coronarylens]
+      summary: Model and data readiness
+      responses:
+        "200":
+          description: Readiness state, including explicit blockers
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Readiness"
+  /schema:
+    get:
+      operationId: getClinicalSchema
+      tags: [coronarylens]
+      summary: Approved predictor schema
+      responses:
+        "200":
+          description: Versioned, source-backed clinical predictor schema
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClinicalSchema"
+        "503":
+          description: Schema artifact is unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServiceUnavailable"
+  /demo-profile:
+    get:
+      operationId: getDemoProfile
+      tags: [coronarylens]
+      summary: Approved deterministic demonstration profile
+      responses:
+        "200":
+          description: Full profile sourced from an approved demo fixture
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DemoProfile"
+        "503":
+          description: No approved demo fixture is available
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServiceUnavailable"
+  /models:
+    get:
+      operationId: getModelRegistry
+      tags: [coronarylens]
+      summary: Target-specific model registry
+      responses:
+        "200":
+          description: Loaded model metadata
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ModelRegistry"
+        "503":
+          description: Model artifacts are unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServiceUnavailable"
+  /evaluation:
+    get:
+      operationId: getEvaluation
+      tags: [coronarylens]
+      summary: Measured model evaluation results
+      responses:
+        "200":
+          description: Metrics computed from saved out-of-fold evaluation results
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Evaluation"
+        "503":
+          description: No verified evaluation artifact is available
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServiceUnavailable"
+  /predict:
+    post:
+      operationId: createPrediction
+      tags: [coronarylens]
+      summary: Run the four target-specific models on one complete profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PredictionInput"
+      responses:
+        "200":
+          description: Four model-generated target outputs
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Prediction"
+        "400":
+          description: Invalid or incomplete clinical profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationError"
+        "503":
+          description: Prediction pipeline is unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServiceUnavailable"
+  /explain/{target}:
+    post:
+      operationId: explainPrediction
+      tags: [coronarylens]
+      summary: Explain one target for the exact submitted profile
+      parameters:
+        - name: target
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/Target"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExplanationInput"
+      responses:
+        "200":
+          description: Target-specific model explanation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Explanation"
+        "400":
+          description: Invalid or incomplete clinical profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationError"
+        "503":
+          description: Explanation service is unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServiceUnavailable"
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+    ServiceUnavailable:
+      type: object
+      properties:
+        error:
+          type: string
+        code:
+          type: string
+        blockers:
+          type: array
+          items:
+            type: string
+      required: [error, code]
+    Readiness:
+      type: object
+      properties:
+        ready:
+          type: boolean
+        dataset:
+          type: string
+        schema:
+          type: string
+        models:
+          type: string
+        evaluation:
+          type: string
+        blockers:
+          type: array
+          items:
+            type: string
+      required: [ready, dataset, schema, models, evaluation, blockers]
+    Target:
+      type: string
+      enum: [CAD, LAD, LCX, RCA]
+    FeatureDefinition:
+      type: object
+      properties:
+        name:
+          type: string
+        label:
+          type: string
+        description:
+          type: ["string", "null"]
+        group:
+          type: string
+        type:
+          type: string
+          enum: [numeric, categorical, ordinal]
+        required:
+          type: boolean
+        unit:
+          type: ["string", "null"]
+        minimum:
+          type: ["number", "null"]
+        maximum:
+          type: ["number", "null"]
+        categories:
+          type: array
+          items:
+            type: string
+        semantics_verified:
+          type: boolean
+      required: [name, label, group, type, required, semantics_verified]
+    ClinicalSchema:
+      type: object
+      properties:
+        schema_version:
+          type: string
+        source:
+          type: string
+        predictor_count:
+          type: integer
+        forbidden_predictors:
+          type: array
+          items:
+            type: string
+        predictors:
+          type: array
+          items:
+            $ref: "#/components/schemas/FeatureDefinition"
+      required: [schema_version, source, predictor_count, forbidden_predictors, predictors]
+    DemoProfile:
+      type: object
+      properties:
+        values:
+          type: object
+          additionalProperties: true
+        label:
+          type: string
+        provenance:
+          type: string
+      required: [values, label, provenance]
+    ModelTarget:
+      type: object
+      properties:
+        target:
+          $ref: "#/components/schemas/Target"
+        model_family:
+          type: string
+        model_version:
+          type: string
+        validation_method:
+          type: string
+        score_semantics:
+          type: string
+          enum: [probability, model_score]
+        selection_rationale:
+          type: string
+      required: [target, model_family, model_version, validation_method, score_semantics]
+    ModelRegistry:
+      type: object
+      properties:
+        version:
+          type: string
+        dataset_checksum:
+          type: string
+        feature_schema_version:
+          type: string
+        targets:
+          type: array
+          items:
+            $ref: "#/components/schemas/ModelTarget"
+      required: [version, dataset_checksum, feature_schema_version, targets]
+    MetricSet:
+      type: object
+      properties:
+        accuracy:
+          type: ["number", "null"]
+        balanced_accuracy:
+          type: ["number", "null"]
+        precision:
+          type: ["number", "null"]
+        recall:
+          type: ["number", "null"]
+        specificity:
+          type: ["number", "null"]
+        f1:
+          type: ["number", "null"]
+        roc_auc:
+          type: ["number", "null"]
+        pr_auc:
+          type: ["number", "null"]
+        brier_score:
+          type: ["number", "null"]
+      additionalProperties: false
+    TargetEvaluation:
+      type: object
+      properties:
+        target:
+          $ref: "#/components/schemas/Target"
+        model_family:
+          type: string
+        metrics:
+          $ref: "#/components/schemas/MetricSet"
+        fold_count:
+          type: integer
+        confusion_matrix:
+          type: array
+          items:
+            type: array
+            items:
+              type: integer
+      required: [target, model_family, metrics, fold_count]
+    Evaluation:
+      type: object
+      properties:
+        dataset_source:
+          type: string
+        sample_count:
+          type: integer
+        validation_method:
+          type: string
+        targets:
+          type: array
+          items:
+            $ref: "#/components/schemas/TargetEvaluation"
+      required: [dataset_source, sample_count, validation_method, targets]
+    PredictionInput:
+      type: object
+      properties:
+        values:
+          type: object
+          additionalProperties: true
+      required: [values]
+    TargetOutput:
+      type: object
+      properties:
+        score:
+          type: number
+        score_semantics:
+          type: string
+          enum: [probability, model_score]
+        model_family:
+          type: string
+        model_version:
+          type: string
+        threshold:
+          type: ["number", "null"]
+        predicted_class:
+          type: string
+      required: [score, score_semantics, model_family, model_version]
+    Prediction:
+      type: object
+      properties:
+        request_id:
+          type: string
+        registry_version:
+          type: string
+        outputs:
+          type: object
+          properties:
+            CAD:
+              $ref: "#/components/schemas/TargetOutput"
+            LAD:
+              $ref: "#/components/schemas/TargetOutput"
+            LCX:
+              $ref: "#/components/schemas/TargetOutput"
+            RCA:
+              $ref: "#/components/schemas/TargetOutput"
+          required: [CAD, LAD, LCX, RCA]
+        warnings:
+          type: array
+          items:
+            type: string
+      required: [request_id, registry_version, outputs, warnings]
+    ExplanationInput:
+      type: object
+      properties:
+        values:
+          type: object
+          additionalProperties: true
+        prediction_request_id:
+          type: string
+      required: [values, prediction_request_id]
+    Contribution:
+      type: object
+      properties:
+        feature:
+          type: string
+        label:
+          type: string
+        value:
+          type: ["number", "string", "boolean"]
+        contribution:
+          type: number
+        direction:
+          type: string
+          enum: [toward_positive, toward_negative]
+        output_space:
+          type: string
+        description:
+          type: ["string", "null"]
+      required: [feature, label, value, contribution, direction, output_space]
+    Explanation:
+      type: object
+      properties:
+        target:
+          $ref: "#/components/schemas/Target"
+        prediction_request_id:
+          type: string
+        model_version:
+          type: string
+        method:
+          type: string
+        baseline:
+          type: string
+        baseline_score:
+          type: number
+        prediction_score:
+          type: number
+        full_attribution_sum:
+          type: number
+        additivity_residual:
+          type: number
+        output_space:
+          type: string
+        limitations:
+          type: array
+          items:
+            type: string
+        contributions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Contribution"
+      required: [target, prediction_request_id, model_version, method, baseline, baseline_score, prediction_score, output_space, limitations, contributions]
+    ValidationError:
+      type: object
+      properties:
+        error:
+          type: string
+        fields:
+          type: object
+          additionalProperties:
+            type: string
+      required: [error]
+

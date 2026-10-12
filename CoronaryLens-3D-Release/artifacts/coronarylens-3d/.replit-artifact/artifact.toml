@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "CoronaryLens 3D"
+description = "An explainable cardiovascular research workbench for reviewing clinical profiles, four independently modeled CAD and vessel-level outputs, and their correspondence to an interactive 3D coronary anatomy view."
+version = "1.0.0"
+id = "artifacts/coronarylens-3d"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 20283
+
+[services.development]
+run = "pnpm --filter @workspace/coronarylens-3d run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/coronarylens-3d", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/coronarylens-3d/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "20283"
+BASE_PATH = "/"

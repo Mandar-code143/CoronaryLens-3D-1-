@@ -1,0 +1,379 @@
+{
+  "source": {
+    "url": "https://archive.ics.uci.edu/dataset/411/extention+of+z+alizadeh+sani+dataset",
+    "citation": "Alizadehsani, R., Roshanzamir, M., & Sani, Z. (2013). Extension of Z-Alizadeh Sani dataset. UCI Machine Learning Repository.",
+    "doi": "10.24432/C5461K",
+    "license": "CC BY 4.0",
+    "sha256": "739343245c2ba578b541370217531750d8e936022f928b83e0d91756caa3ff0b",
+    "workbook_sheets": [
+      "Sheet 1 - Table 1",
+      "Sheet1"
+    ],
+    "modeling_sheet": "Sheet 1 - Table 1",
+    "empty_second_sheet_rows": 0
+  },
+  "preprocessing_normalizations": {
+    "value_mappings": {
+      "Sex": {
+        "Fmale": 127
+      }
+    },
+    "note": "Mappings correct source display typos only; original source workbook is retained with its checksum for provenance."
+  },
+  "dimensions": {
+    "rows": 303,
+    "columns": 59,
+    "predictors_after_target_exclusion": 55,
+    "source_outcome_columns": [
+      "Cath",
+      "LAD",
+      "LCX",
+      "RCA"
+    ]
+  },
+  "prompt_vs_source_discrepancy": {
+    "brief_predictor_count": 54,
+    "observed_predictor_count": 55,
+    "explanation": "The downloaded UCI workbook has 59 columns: 55 predictors and four outcome columns (LAD, LCX, RCA, Cath). It has no separate CAD column; Cath contains CAD/Normal labels and is mapped to the CAD target. All five target-related names are excluded from predictors if present."
+  },
+  "targets": {
+    "CAD": {
+      "source_column": "Cath",
+      "class_distribution": {
+        "CAD": 216,
+        "Normal": 87
+      }
+    },
+    "LAD": {
+      "source_column": "LAD",
+      "class_distribution": {
+        "Stenotic": 177,
+        "Normal": 126
+      }
+    },
+    "LCX": {
+      "source_column": "LCX",
+      "class_distribution": {
+        "Normal": 184,
+        "Stenotic": 119
+      }
+    },
+    "RCA": {
+      "source_column": "RCA",
+      "class_distribution": {
+        "Normal": 189,
+        "Stenotic": 114
+      }
+    }
+  },
+  "duplicates": {
+    "exact_rows": 0
+  },
+  "missing_values": {
+    "total": 0,
+    "by_column": {}
+  },
+  "numeric_ranges": {
+    "Age": {
+      "minimum": 30.0,
+      "maximum": 86.0
+    },
+    "Weight": {
+      "minimum": 48.0,
+      "maximum": 120.0
+    },
+    "Length": {
+      "minimum": 140.0,
+      "maximum": 188.0
+    },
+    "BMI": {
+      "minimum": 18.115412710007302,
+      "maximum": 40.90065778377467
+    },
+    "DM": {
+      "minimum": 0.0,
+      "maximum": 1.0
+    },
+    "HTN": {
+      "minimum": 0.0,
+      "maximum": 1.0
+    },
+    "Current Smoker": {
+      "minimum": 0.0,
+      "maximum": 1.0
+    },
+    "EX-Smoker": {
+      "minimum": 0.0,
+      "maximum": 1.0
+    },
+    "FH": {
+      "minimum": 0.0,
+      "maximum": 1.0
+    },
+    "BP": {
+      "minimum": 90.0,
+      "maximum": 190.0
+    },
+    "PR": {
+      "minimum": 50.0,
+      "maximum": 110.0
+    },
+    "Edema": {
+      "minimum": 0.0,
+      "maximum": 1.0
+    },
+    "Typical Chest Pain": {
+      "minimum": 0.0,
+      "maximum": 1.0
+    },
+    "Function Class": {
+      "minimum": 0.0,
+      "maximum": 3.0
+    },
+    "Q Wave": {
+      "minimum": 0.0,
+      "maximum": 1.0
+    },
+    "St Elevation": {
+      "minimum": 0.0,
+      "maximum": 1.0
+    },
+    "St Depression": {
+      "minimum": 0.0,
+      "maximum": 1.0
+    },
+    "Tinversion": {
+      "minimum": 0.0,
+      "maximum": 1.0
+    },
+    "FBS": {
+      "minimum": 62.0,
+      "maximum": 400.0
+    },
+    "CR": {
+      "minimum": 0.5,
+      "maximum": 2.2
+    },
+    "TG": {
+      "minimum": 37.0,
+      "maximum": 1050.0
+    },
+    "LDL": {
+      "minimum": 18.0,
+      "maximum": 232.0
+    },
+    "HDL": {
+      "minimum": 15.9,
+      "maximum": 111.0
+    },
+    "BUN": {
+      "minimum": 6.0,
+      "maximum": 52.0
+    },
+    "ESR": {
+      "minimum": 1.0,
+      "maximum": 90.0
+    },
+    "HB": {
+      "minimum": 8.9,
+      "maximum": 17.6
+    },
+    "K": {
+      "minimum": 3.0,
+      "maximum": 6.6
+    },
+    "Na": {
+      "minimum": 128.0,
+      "maximum": 156.0
+    },
+    "WBC": {
+      "minimum": 3700.0,
+      "maximum": 18000.0
+    },
+    "Lymph": {
+      "minimum": 7.0,
+      "maximum": 60.0
+    },
+    "Neut": {
+      "minimum": 32.0,
+      "maximum": 89.0
+    },
+    "PLT": {
+      "minimum": 25.0,
+      "maximum": 742.0
+    },
+    "EF-TTE": {
+      "minimum": 15.0,
+      "maximum": 60.0
+    },
+    "Region RWMA": {
+      "minimum": 0.0,
+      "maximum": 4.0
+    }
+  },
+  "categorical_values": {
+    "Sex": [
+      "Female",
+      "Male"
+    ],
+    "Obesity": [
+      "N",
+      "Y"
+    ],
+    "CRF": [
+      "N",
+      "Y"
+    ],
+    "CVA": [
+      "N",
+      "Y"
+    ],
+    "Airway disease": [
+      "N",
+      "Y"
+    ],
+    "Thyroid Disease": [
+      "N",
+      "Y"
+    ],
+    "CHF": [
+      "N",
+      "Y"
+    ],
+    "DLP": [
+      "N",
+      "Y"
+    ],
+    "Weak Peripheral Pulse": [
+      "N",
+      "Y"
+    ],
+    "Lung rales": [
+      "N",
+      "Y"
+    ],
+    "Systolic Murmur": [
+      "N",
+      "Y"
+    ],
+    "Diastolic Murmur": [
+      "N",
+      "Y"
+    ],
+    "Dyspnea": [
+      "N",
+      "Y"
+    ],
+    "Atypical": [
+      "N",
+      "Y"
+    ],
+    "Nonanginal": [
+      "N",
+      "Y"
+    ],
+    "Exertional CP": [
+      "N"
+    ],
+    "LowTH Ang": [
+      "N",
+      "Y"
+    ],
+    "LVH": [
+      "N",
+      "Y"
+    ],
+    "Poor R Progression": [
+      "N",
+      "Y"
+    ],
+    "BBB": [
+      "LBBB",
+      "N",
+      "RBBB"
+    ],
+    "VHD": [
+      "Moderate",
+      "N",
+      "Severe",
+      "mild"
+    ]
+  },
+  "target_consistency": {
+    "cad_equals_any_stenotic_vessel_mismatches": 1,
+    "cad_definition": "CAD status is the dataset's Cath field mapped from CAD/Normal.",
+    "note": "A mismatch is reported, not silently corrected."
+  },
+  "leakage_controls": {
+    "forbidden_names": [
+      "CAD",
+      "Cath",
+      "LAD",
+      "LCX",
+      "RCA"
+    ],
+    "predictor_columns": [
+      "Age",
+      "Weight",
+      "Length",
+      "Sex",
+      "BMI",
+      "DM",
+      "HTN",
+      "Current Smoker",
+      "EX-Smoker",
+      "FH",
+      "Obesity",
+      "CRF",
+      "CVA",
+      "Airway disease",
+      "Thyroid Disease",
+      "CHF",
+      "DLP",
+      "BP",
+      "PR",
+      "Edema",
+      "Weak Peripheral Pulse",
+      "Lung rales",
+      "Systolic Murmur",
+      "Diastolic Murmur",
+      "Typical Chest Pain",
+      "Dyspnea",
+      "Function Class",
+      "Atypical",
+      "Nonanginal",
+      "Exertional CP",
+      "LowTH Ang",
+      "Q Wave",
+      "St Elevation",
+      "St Depression",
+      "Tinversion",
+      "LVH",
+      "Poor R Progression",
+      "BBB",
+      "FBS",
+      "CR",
+      "TG",
+      "LDL",
+      "HDL",
+      "BUN",
+      "ESR",
+      "HB",
+      "K",
+      "Na",
+      "WBC",
+      "Lymph",
+      "Neut",
+      "PLT",
+      "EF-TTE",
+      "Region RWMA",
+      "VHD"
+    ],
+    "target_source_mapping": {
+      "CAD": "Cath",
+      "LAD": "LAD",
+      "LCX": "LCX",
+      "RCA": "RCA"
+    }
+  }
+}

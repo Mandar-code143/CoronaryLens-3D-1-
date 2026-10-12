@@ -1,0 +1,1132 @@
+{
+  "artifact_version": "research-evaluation-v1",
+  "created_at_utc": "2026-10-10T18:57:52.976865+00:00",
+  "dataset_source": "https://archive.ics.uci.edu/dataset/411/extention+of+z+alizadeh+sani+dataset",
+  "dataset_checksum": "ebdc78fbf3b0c631c569e0b0907c1d8bfeedb6dc4953133a86c58b015d5983bf",
+  "source_workbook_checksum": "739343245c2ba578b541370217531750d8e936022f928b83e0d91756caa3ff0b",
+  "feature_schema_version": "uci411-source-v2-display-normalization",
+  "feature_schema_checksum": "cc76d86d1485c6b6f536c6b5493ddb9444786820b1b6e43ef17fafb79a7f4a45",
+  "sample_count": 303,
+  "predictor_count": 55,
+  "validation_method": "5-fold nested stratified cross-validation with 3-fold inner candidate selection",
+  "seed": 1431,
+  "selection_rule": "Nested CV selects candidate families within each outer training fold for headline metrics. The final serving family is selected by highest full-cohort OOF ROC-AUC for fitting the final research artifact; those screening metrics are not presented as unbiased selected-model performance.",
+  "selection_bias_note": "Full-cohort candidate screening uses OOF predictions to choose the final serving family and is subject to selection optimism. Headline target metrics use nested cross-validation to reduce this bias. No external or prospective validation has been performed.",
+  "limitations": [
+    "Small retrospective public cohort (303 rows); high uncertainty and likely limited transportability.",
+    "Cross-validation is internal validation, not independent external or prospective validation.",
+    "The source cohort and labels do not establish readiness for clinical use.",
+    "Feature semantics and units must be independently reviewed before any clinical interpretation.",
+    "Final fitted models are research artifacts only; no diagnosis or treatment advice is provided."
+  ],
+  "targets": [
+    {
+      "target": "CAD",
+      "model_family": "nested-model-selection (candidate may vary by outer fold)",
+      "evaluation_procedure": "nested-model-selection",
+      "serving_model_family": "logistic-regression",
+      "metrics": {
+        "accuracy": 0.858085808580858,
+        "balanced_accuracy": 0.8249521072796935,
+        "precision": 0.8986175115207373,
+        "recall": 0.9027777777777778,
+        "specificity": 0.7471264367816092,
+        "f1": 0.9006928406466512,
+        "roc_auc": 0.8953277990634313,
+        "pr_auc": 0.9477885966739438,
+        "brier_score": 0.11026470522072389,
+        "confusion_matrix": [
+          [
+            65,
+            22
+          ],
+          [
+            21,
+            195
+          ]
+        ],
+        "threshold": 0.5
+      },
+      "fold_count": 5,
+      "inner_fold_count": 3,
+      "sample_count": 303,
+      "positive_count": 216,
+      "negative_count": 87,
+      "validation_method": "5-fold nested stratified CV; 3-fold inner CV selects a candidate per outer fold",
+      "outer_fold_candidate_selection": [
+        {
+          "outer_fold": 1,
+          "selected_candidate": "rbf-svm",
+          "inner_cv_auc_by_candidate": {
+            "logistic-regression": 0.9089700996677742,
+            "random-forest": 0.8964285714285714,
+            "extra-trees": 0.9003322259136213,
+            "rbf-svm": 0.9142026578073089
+          },
+          "outer_test_count": 61
+        },
+        {
+          "outer_fold": 2,
+          "selected_candidate": "rbf-svm",
+          "inner_cv_auc_by_candidate": {
+            "logistic-regression": 0.8908435955432689,
+            "random-forest": 0.9033257937505236,
+            "extra-trees": 0.9035771131775152,
+            "rbf-svm": 0.9234313479098601
+          },
+          "outer_test_count": 61
+        },
+        {
+          "outer_fold": 3,
+          "selected_candidate": "extra-trees",
+          "inner_cv_auc_by_candidate": {
+            "logistic-regression": 0.8912624612549216,
+            "random-forest": 0.8965401692217475,
+            "extra-trees": 0.900142414341962,
+            "rbf-svm": 0.9000586411996313
+          },
+          "outer_test_count": 61
+        },
+        {
+          "outer_fold": 4,
+          "selected_candidate": "logistic-regression",
+          "inner_cv_auc_by_candidate": {
+            "logistic-regression": 0.91065235342692,
+            "random-forest": 0.9097440132122214,
+            "extra-trees": 0.9025598678777869,
+            "rbf-svm": 0.9061932287365813
+          },
+          "outer_test_count": 60
+        },
+        {
+          "outer_fold": 5,
+          "selected_candidate": "rbf-svm",
+          "inner_cv_auc_by_candidate": {
+            "logistic-regression": 0.891907514450867,
+            "random-forest": 0.9022295623451692,
+            "extra-trees": 0.9069364161849711,
+            "rbf-svm": 0.9086705202312139
+          },
+          "outer_test_count": 60
+        }
+      ]
+    },
+    {
+      "target": "LAD",
+      "model_family": "nested-model-selection (candidate may vary by outer fold)",
+      "evaluation_procedure": "nested-model-selection",
+      "serving_model_family": "random-forest",
+      "metrics": {
+        "accuracy": 0.7788778877887789,
+        "balanced_accuracy": 0.7627118644067796,
+        "precision": 0.7835051546391752,
+        "recall": 0.8587570621468926,
+        "specificity": 0.6666666666666666,
+        "f1": 0.8194070080862533,
+        "roc_auc": 0.8428392072459869,
+        "pr_auc": 0.8760795454328855,
+        "brier_score": 0.16279623810563712,
+        "confusion_matrix": [
+          [
+            84,
+            42
+          ],
+          [
+            25,
+            152
+          ]
+        ],
+        "threshold": 0.5
+      },
+      "fold_count": 5,
+      "inner_fold_count": 3,
+      "sample_count": 303,
+      "positive_count": 177,
+      "negative_count": 126,
+      "validation_method": "5-fold nested stratified CV; 3-fold inner CV selects a candidate per outer fold",
+      "outer_fold_candidate_selection": [
+        {
+          "outer_fold": 1,
+          "selected_candidate": "random-forest",
+          "inner_cv_auc_by_candidate": {
+            "logistic-regression": 0.8095639351169159,
+            "random-forest": 0.8347026191980901,
+            "extra-trees": 0.8209395407625869,
+            "rbf-svm": 0.8342110806825362
+          },
+          "outer_test_count": 61
+        },
+        {
+          "outer_fold": 2,
+          "selected_candidate": "extra-trees",
+          "inner_cv_auc_by_candidate": {
+            "logistic-regression": 0.8051400884769326,
+            "random-forest": 0.8067551435994663,
+            "extra-trees": 0.8131451443016642,
+            "rbf-svm": 0.7764201952110105
+          },
+          "outer_test_count": 61
+        },
+        {
+          "outer_fold": 3,
+          "selected_candidate": "random-forest",
+          "inner_cv_auc_by_candidate": {
+            "logistic-regression": 0.7690845070422535,
+            "random-forest": 0.8007746478873239,
+            "extra-trees": 0.7925352112676057,
+            "rbf-svm": 0.7951408450704225
+          },
+          "outer_test_count": 61
+        },
+        {
+          "outer_fold": 4,
+          "selected_candidate": "rbf-svm",
+          "inner_cv_auc_by_candidate": {
+            "logistic-regression": 0.7710221726397992,
+            "random-forest": 0.8014921210430902,
+            "extra-trees": 0.7918003067912425,
+            "rbf-svm": 0.8115325617068749
+          },
+          "outer_test_count": 60
+        },
+        {
+          "outer_fold": 5,
+          "selected_candidate": "random-forest",
+          "inner_cv_auc_by_candidate": {
+            "logistic-regression": 0.816134430344443,
+            "random-forest": 0.8327987728350299,
+            "extra-trees": 0.8276391019383629,
+            "rbf-svm": 0.8240133872542184
+          },
+          "outer_test_count": 60
+        }
+      ]
+    },
+    {
+      "target": "LCX",
+      "model_family": "nested-model-selection (candidate may vary by outer fold)",
+      "evaluation_procedure": "nested-model-selection",
+      "serving_model_family": "random-forest",
+      "metrics": {
+        "accuracy": 0.6864686468646864,
+        "balanced_accuracy": 0.6572433321154549,
+        "precision": 0.62,
+        "recall": 0.5210084033613446,
+        "specificity": 0.7934782608695652,
+        "f1": 0.5662100456621004,
+        "roc_auc": 0.7603671903544026,
+        "pr_auc": 0.6255444646442414,
+        "brier_score": 0.19999259834553226,
+        "confusion_matrix": [
+          [
+            146,
+            38
+          ],
+          [
+            57,
+            62
+          ]
+        ],
+        "threshold": 0.5
+      },
+      "fold_count": 5,
+      "inner_fold_count": 3,
+      "sample_count": 303,
+      "positive_count": 119,
+      "negative_count": 184,
+      "validation_method": "5-fold nested stratified CV; 3-fold inner CV selects a candidate per outer fold",
+      "outer_fold_candidate_selection": [
+        {
+          "outer_fold": 1,
+          "selected_candidate": "random-forest",
+          "inner_cv_auc_by_candidate": {
+            "logistic-regression": 0.6027210884353742,
+            "random-forest": 0.7176512710347297,
+            "extra-trees": 0.685141424991049,
+            "rbf-svm": 0.6709631220909416
+          },
+          "outer_test_count": 61
+        },
+        {
+          "outer_fold": 2,
+          "selected_candidate": "random-forest",
+          "inner_cv_auc_by_candidate": {
+            "logistic-regression": 0.6729681346222699,
+            "random-forest": 0.6977443609022557,
+            "extra-trees": 0.6815610454708199,
+            "rbf-svm": 0.6741854636591479
+          },
+          "outer_test_count": 61
+        },
+        {
+          "outer_fold": 3,
+          "selected_candidate": "random-forest",
+          "inner_cv_auc_by_candidate": {
+            "logistic-regression": 0.7147869674185464,
+            "random-forest": 0.7670605084138918,
+            "extra-trees": 0.7169351951306838,
+            "rbf-svm": 0.735767991407089
+          },
+          "outer_test_count": 61
+        },
+        {
+          "outer_fold": 4,
+          "selected_candidate": "random-forest",
+          "inner_cv_auc_by_candidate": {
+            "logistic-regression": 0.5921201814058957,
+            "random-forest": 0.67453231292517,
+            "extra-trees": 0.6400226757369615,
+            "rbf-svm": 0.6602536848072562
+          },
+          "outer_test_count": 60
+        },
+        {
+          "outer_fold": 5,
+          "selected_candidate": "random-forest",
+          "inner_cv_auc_by_candidate": {
+            "logistic-regression": 0.6620910384068279,
+            "random-forest": 0.7406116642958749,
+            "extra-trees": 0.6668563300142247,
+            "rbf-svm": 0.7120199146514936
+          },
+          "outer_test_count": 60
+        }
+      ]
+    },
+    {
+      "target": "RCA",
+      "model_family": "nested-model-selection (candidate may vary by outer fold)",
+      "evaluation_procedure": "nested-model-selection",
+      "serving_model_family": "extra-trees",
+      "metrics": {
+        "accuracy": 0.6501650165016502,
+        "balanced_accuracy": 0.6273322194374826,
+        "precision": 0.5350877192982456,
+        "recall": 0.5350877192982456,
+        "specificity": 0.7195767195767195,
+        "f1": 0.5350877192982456,
+        "roc_auc": 0.6961384943841085,
+        "pr_auc": 0.5429768904110139,
+        "brier_score": 0.21958781793457352,
+        "confusion_matrix": [
+          [
+            136,
+            53
+          ],
+          [
+            53,
+            61
+          ]
+        ],
+        "threshold": 0.5
+      },
+      "fold_count": 5,
+      "inner_fold_count": 3,
+      "sample_count": 303,
+      "positive_count": 114,
+      "negative_count": 189,
+      "validation_method": "5-fold nested stratified CV; 3-fold inner CV selects a candidate per outer fold",
+      "outer_fold_candidate_selection": [
+        {
+          "outer_fold": 1,
+          "selected_candidate": "logistic-regression",
+          "inner_cv_auc_by_candidate": {
+            "logistic-regression": 0.6888872716687285,
+            "random-forest": 0.6618150061858671,
+            "extra-trees": 0.6782621352157776,
+            "rbf-svm": 0.6581762608252675
+          },
+          "outer_test_count": 61
+        },
+        {
+          "outer_fold": 2,
+          "selected_candidate": "extra-trees",
+          "inner_cv_auc_by_candidate": {
+            "logistic-regression": 0.7023506295029475,
+            "random-forest": 0.7009679062659195,
+            "extra-trees": 0.7142857142857143,
+            "rbf-svm": 0.7030056036678554
+          },
+          "outer_test_count": 61
+        },
+        {
+          "outer_fold": 3,
+          "selected_candidate": "logistic-regression",
+          "inner_cv_auc_by_candidate": {
+            "logistic-regression": 0.729350120078597,
+            "random-forest": 0.6791354341023216,
+            "extra-trees": 0.6958736627610801,
+            "rbf-svm": 0.7010406811731315
+          },
+          "outer_test_count": 61
+        },
+        {
+          "outer_fold": 4,
+          "selected_candidate": "extra-trees",
+          "inner_cv_auc_by_candidate": {
+            "logistic-regression": 0.6461104684788895,
+            "random-forest": 0.7034412955465587,
+            "extra-trees": 0.7155870445344129,
+            "rbf-svm": 0.6966454598033545
+          },
+          "outer_test_count": 60
+        },
+        {
+          "outer_fold": 5,
+          "selected_candidate": "rbf-svm",
+          "inner_cv_auc_by_candidate": {
+            "logistic-regression": 0.6992513676936366,
+            "random-forest": 0.7054419809962569,
+            "extra-trees": 0.6999712064497553,
+            "rbf-svm": 0.7191189173625109
+          },
+          "outer_test_count": 60
+        }
+      ]
+    }
+  ],
+  "candidate_screening_results": [
+    {
+      "target": "CAD",
+      "model_family": "logistic-regression",
+      "metrics": {
+        "accuracy": 0.858085808580858,
+        "balanced_accuracy": 0.8592752234993615,
+        "precision": 0.9390862944162437,
+        "recall": 0.8564814814814815,
+        "specificity": 0.8620689655172413,
+        "f1": 0.8958837772397095,
+        "roc_auc": 0.9257130693912302,
+        "pr_auc": 0.9689601193714136,
+        "brier_score": 0.10786244749216908,
+        "confusion_matrix": [
+          [
+            75,
+            12
+          ],
+          [
+            31,
+            185
+          ]
+        ],
+        "threshold": 0.5
+      },
+      "fold_count": 5,
+      "sample_count": 303,
+      "positive_count": 216,
+      "negative_count": 87,
+      "validation_method": "5-fold stratified cross-validation; out-of-fold predictions",
+      "candidate": "logistic-regression"
+    },
+    {
+      "target": "CAD",
+      "model_family": "random-forest",
+      "metrics": {
+        "accuracy": 0.8613861386138614,
+        "balanced_accuracy": 0.8238346104725416,
+        "precision": 0.8954545454545455,
+        "recall": 0.9120370370370371,
+        "specificity": 0.735632183908046,
+        "f1": 0.9036697247706422,
+        "roc_auc": 0.9055981268624946,
+        "pr_auc": 0.9540451475556085,
+        "brier_score": 0.11881040384126297,
+        "confusion_matrix": [
+          [
+            64,
+            23
+          ],
+          [
+            19,
+            197
+          ]
+        ],
+        "threshold": 0.5
+      },
+      "fold_count": 5,
+      "sample_count": 303,
+      "positive_count": 216,
+      "negative_count": 87,
+      "validation_method": "5-fold stratified cross-validation; out-of-fold predictions",
+      "candidate": "random-forest"
+    },
+    {
+      "target": "CAD",
+      "model_family": "extra-trees",
+      "metrics": {
+        "accuracy": 0.8613861386138614,
+        "balanced_accuracy": 0.847860791826309,
+        "precision": 0.9223300970873787,
+        "recall": 0.8796296296296297,
+        "specificity": 0.8160919540229885,
+        "f1": 0.9004739336492891,
+        "roc_auc": 0.9180502341421882,
+        "pr_auc": 0.9652616774186351,
+        "brier_score": 0.11135610006612097,
+        "confusion_matrix": [
+          [
+            71,
+            16
+          ],
+          [
+            26,
+            190
+          ]
+        ],
+        "threshold": 0.5
+      },
+      "fold_count": 5,
+      "sample_count": 303,
+      "positive_count": 216,
+      "negative_count": 87,
+      "validation_method": "5-fold stratified cross-validation; out-of-fold predictions",
+      "candidate": "extra-trees"
+    },
+    {
+      "target": "CAD",
+      "model_family": "rbf-svm",
+      "metrics": {
+        "accuracy": 0.8778877887788779,
+        "balanced_accuracy": 0.8354086845466155,
+        "precision": 0.8977777777777778,
+        "recall": 0.9351851851851852,
+        "specificity": 0.735632183908046,
+        "f1": 0.9160997732426304,
+        "roc_auc": 0.9237441464452959,
+        "pr_auc": 0.9645984828960934,
+        "brier_score": 0.0946215864250012,
+        "confusion_matrix": [
+          [
+            64,
+            23
+          ],
+          [
+            14,
+            202
+          ]
+        ],
+        "threshold": 0.5
+      },
+      "fold_count": 5,
+      "sample_count": 303,
+      "positive_count": 216,
+      "negative_count": 87,
+      "validation_method": "5-fold stratified cross-validation; out-of-fold predictions",
+      "candidate": "rbf-svm"
+    },
+    {
+      "target": "LAD",
+      "model_family": "logistic-regression",
+      "metrics": {
+        "accuracy": 0.735973597359736,
+        "balanced_accuracy": 0.7339924670433144,
+        "precision": 0.7904191616766467,
+        "recall": 0.7457627118644068,
+        "specificity": 0.7222222222222222,
+        "f1": 0.7674418604651163,
+        "roc_auc": 0.8216751860819658,
+        "pr_auc": 0.8682849175402576,
+        "brier_score": 0.18205427607349442,
+        "confusion_matrix": [
+          [
+            91,
+            35
+          ],
+          [
+            45,
+            132
+          ]
+        ],
+        "threshold": 0.5
+      },
+      "fold_count": 5,
+      "sample_count": 303,
+      "positive_count": 177,
+      "negative_count": 126,
+      "validation_method": "5-fold stratified cross-validation; out-of-fold predictions",
+      "candidate": "logistic-regression"
+    },
+    {
+      "target": "LAD",
+      "model_family": "random-forest",
+      "metrics": {
+        "accuracy": 0.7887788778877888,
+        "balanced_accuracy": 0.7723298358891579,
+        "precision": 0.7897435897435897,
+        "recall": 0.8700564971751412,
+        "specificity": 0.6746031746031746,
+        "f1": 0.8279569892473119,
+        "roc_auc": 0.8466056855887364,
+        "pr_auc": 0.8753631996779478,
+        "brier_score": 0.1662223395473973,
+        "confusion_matrix": [
+          [
+            85,
+            41
+          ],
+          [
+            23,
+            154
+          ]
+        ],
+        "threshold": 0.5
+      },
+      "fold_count": 5,
+      "sample_count": 303,
+      "positive_count": 177,
+      "negative_count": 126,
+      "validation_method": "5-fold stratified cross-validation; out-of-fold predictions",
+      "candidate": "random-forest"
+    },
+    {
+      "target": "LAD",
+      "model_family": "extra-trees",
+      "metrics": {
+        "accuracy": 0.768976897689769,
+        "balanced_accuracy": 0.7530938929244013,
+        "precision": 0.7772020725388601,
+        "recall": 0.847457627118644,
+        "specificity": 0.6587301587301587,
+        "f1": 0.8108108108108109,
+        "roc_auc": 0.8235135862254507,
+        "pr_auc": 0.8545101024075723,
+        "brier_score": 0.16800411815761288,
+        "confusion_matrix": [
+          [
+            83,
+            43
+          ],
+          [
+            27,
+            150
+          ]
+        ],
+        "threshold": 0.5
+      },
+      "fold_count": 5,
+      "sample_count": 303,
+      "positive_count": 177,
+      "negative_count": 126,
+      "validation_method": "5-fold stratified cross-validation; out-of-fold predictions",
+      "candidate": "extra-trees"
+    },
+    {
+      "target": "LAD",
+      "model_family": "rbf-svm",
+      "metrics": {
+        "accuracy": 0.759075907590759,
+        "balanced_accuracy": 0.737758945386064,
+        "precision": 0.7574257425742574,
+        "recall": 0.864406779661017,
+        "specificity": 0.6111111111111112,
+        "f1": 0.8073878627968337,
+        "roc_auc": 0.8372343287597525,
+        "pr_auc": 0.8726388329882551,
+        "brier_score": 0.15977725493584066,
+        "confusion_matrix": [
+          [
+            77,
+            49
+          ],
+          [
+            24,
+            153
+          ]
+        ],
+        "threshold": 0.5
+      },
+      "fold_count": 5,
+      "sample_count": 303,
+      "positive_count": 177,
+      "negative_count": 126,
+      "validation_method": "5-fold stratified cross-validation; out-of-fold predictions",
+      "candidate": "rbf-svm"
+    },
+    {
+      "target": "LCX",
+      "model_family": "logistic-regression",
+      "metrics": {
+        "accuracy": 0.6666666666666666,
+        "balanced_accuracy": 0.6646876141761052,
+        "precision": 0.5652173913043478,
+        "recall": 0.6554621848739496,
+        "specificity": 0.6739130434782609,
+        "f1": 0.6070038910505836,
+        "roc_auc": 0.7069327731092437,
+        "pr_auc": 0.6058068253223647,
+        "brier_score": 0.2325875285152322,
+        "confusion_matrix": [
+          [
+            124,
+            60
+          ],
+          [
+            41,
+            78
+          ]
+        ],
+        "threshold": 0.5
+      },
+      "fold_count": 5,
+      "sample_count": 303,
+      "positive_count": 119,
+      "negative_count": 184,
+      "validation_method": "5-fold stratified cross-validation; out-of-fold predictions",
+      "candidate": "logistic-regression"
+    },
+    {
+      "target": "LCX",
+      "model_family": "random-forest",
+      "metrics": {
+        "accuracy": 0.6864686468646864,
+        "balanced_accuracy": 0.6572433321154549,
+        "precision": 0.62,
+        "recall": 0.5210084033613446,
+        "specificity": 0.7934782608695652,
+        "f1": 0.5662100456621004,
+        "roc_auc": 0.7603671903544026,
+        "pr_auc": 0.6255444646442414,
+        "brier_score": 0.19999259834553226,
+        "confusion_matrix": [
+          [
+            146,
+            38
+          ],
+          [
+            57,
+            62
+          ]
+        ],
+        "threshold": 0.5
+      },
+      "fold_count": 5,
+      "sample_count": 303,
+      "positive_count": 119,
+      "negative_count": 184,
+      "validation_method": "5-fold stratified cross-validation; out-of-fold predictions",
+      "candidate": "random-forest"
+    },
+    {
+      "target": "LCX",
+      "model_family": "extra-trees",
+      "metrics": {
+        "accuracy": 0.636963696369637,
+        "balanced_accuracy": 0.625388198757764,
+        "precision": 0.5354330708661418,
+        "recall": 0.5714285714285714,
+        "specificity": 0.6793478260869565,
+        "f1": 0.5528455284552846,
+        "roc_auc": 0.7252466203872854,
+        "pr_auc": 0.602628856065411,
+        "brier_score": 0.207689219774674,
+        "confusion_matrix": [
+          [
+            125,
+            59
+          ],
+          [
+            51,
+            68
+          ]
+        ],
+        "threshold": 0.5
+      },
+      "fold_count": 5,
+      "sample_count": 303,
+      "positive_count": 119,
+      "negative_count": 184,
+      "validation_method": "5-fold stratified cross-validation; out-of-fold predictions",
+      "candidate": "extra-trees"
+    },
+    {
+      "target": "LCX",
+      "model_family": "rbf-svm",
+      "metrics": {
+        "accuracy": 0.6897689768976898,
+        "balanced_accuracy": 0.6510549872122762,
+        "precision": 0.6436781609195402,
+        "recall": 0.47058823529411764,
+        "specificity": 0.8315217391304348,
+        "f1": 0.5436893203883495,
+        "roc_auc": 0.749269272926562,
+        "pr_auc": 0.6008645767559675,
+        "brier_score": 0.20183351236456037,
+        "confusion_matrix": [
+          [
+            153,
+            31
+          ],
+          [
+            63,
+            56
+          ]
+        ],
+        "threshold": 0.5
+      },
+      "fold_count": 5,
+      "sample_count": 303,
+      "positive_count": 119,
+      "negative_count": 184,
+      "validation_method": "5-fold stratified cross-validation; out-of-fold predictions",
+      "candidate": "rbf-svm"
+    },
+    {
+      "target": "RCA",
+      "model_family": "logistic-regression",
+      "metrics": {
+        "accuracy": 0.6501650165016502,
+        "balanced_accuracy": 0.6447368421052632,
+        "precision": 0.5298507462686567,
+        "recall": 0.6228070175438597,
+        "specificity": 0.6666666666666666,
+        "f1": 0.5725806451612904,
+        "roc_auc": 0.7132182307620903,
+        "pr_auc": 0.5809486973869,
+        "brier_score": 0.23106606019288045,
+        "confusion_matrix": [
+          [
+            126,
+            63
+          ],
+          [
+            43,
+            71
+          ]
+        ],
+        "threshold": 0.5
+      },
+      "fold_count": 5,
+      "sample_count": 303,
+      "positive_count": 114,
+      "negative_count": 189,
+      "validation_method": "5-fold stratified cross-validation; out-of-fold predictions",
+      "candidate": "logistic-regression"
+    },
+    {
+      "target": "RCA",
+      "model_family": "random-forest",
+      "metrics": {
+        "accuracy": 0.66996699669967,
+        "balanced_accuracy": 0.6205792258423837,
+        "precision": 0.5853658536585366,
+        "recall": 0.42105263157894735,
+        "specificity": 0.8201058201058201,
+        "f1": 0.4897959183673469,
+        "roc_auc": 0.7083449364151118,
+        "pr_auc": 0.5517452589726677,
+        "brier_score": 0.2087125779785778,
+        "confusion_matrix": [
+          [
+            155,
+            34
+          ],
+          [
+            66,
+            48
+          ]
+        ],
+        "threshold": 0.5
+      },
+      "fold_count": 5,
+      "sample_count": 303,
+      "positive_count": 114,
+      "negative_count": 189,
+      "validation_method": "5-fold stratified cross-validation; out-of-fold predictions",
+      "candidate": "random-forest"
+    },
+    {
+      "target": "RCA",
+      "model_family": "extra-trees",
+      "metrics": {
+        "accuracy": 0.6534653465346535,
+        "balanced_accuracy": 0.6421609579504316,
+        "precision": 0.5354330708661418,
+        "recall": 0.5964912280701754,
+        "specificity": 0.6878306878306878,
+        "f1": 0.5643153526970954,
+        "roc_auc": 0.7187877100157802,
+        "pr_auc": 0.5594559684218913,
+        "brier_score": 0.2067040881193571,
+        "confusion_matrix": [
+          [
+            130,
+            59
+          ],
+          [
+            46,
+            68
+          ]
+        ],
+        "threshold": 0.5
+      },
+      "fold_count": 5,
+      "sample_count": 303,
+      "positive_count": 114,
+      "negative_count": 189,
+      "validation_method": "5-fold stratified cross-validation; out-of-fold predictions",
+      "candidate": "extra-trees"
+    },
+    {
+      "target": "RCA",
+      "model_family": "rbf-svm",
+      "metrics": {
+        "accuracy": 0.6600660066006601,
+        "balanced_accuracy": 0.6039404065719856,
+        "precision": 0.5733333333333334,
+        "recall": 0.37719298245614036,
+        "specificity": 0.8306878306878307,
+        "f1": 0.455026455026455,
+        "roc_auc": 0.7151675485008818,
+        "pr_auc": 0.5574273786429307,
+        "brier_score": 0.20478125480446385,
+        "confusion_matrix": [
+          [
+            157,
+            32
+          ],
+          [
+            71,
+            43
+          ]
+        ],
+        "threshold": 0.5
+      },
+      "fold_count": 5,
+      "sample_count": 303,
+      "positive_count": 114,
+      "negative_count": 189,
+      "validation_method": "5-fold stratified cross-validation; out-of-fold predictions",
+      "candidate": "rbf-svm"
+    }
+  ],
+  "nested_cv_fold_selections": {
+    "CAD": [
+      {
+        "outer_fold": 1,
+        "selected_candidate": "rbf-svm",
+        "inner_cv_auc_by_candidate": {
+          "logistic-regression": 0.9089700996677742,
+          "random-forest": 0.8964285714285714,
+          "extra-trees": 0.9003322259136213,
+          "rbf-svm": 0.9142026578073089
+        },
+        "outer_test_count": 61
+      },
+      {
+        "outer_fold": 2,
+        "selected_candidate": "rbf-svm",
+        "inner_cv_auc_by_candidate": {
+          "logistic-regression": 0.8908435955432689,
+          "random-forest": 0.9033257937505236,
+          "extra-trees": 0.9035771131775152,
+          "rbf-svm": 0.9234313479098601
+        },
+        "outer_test_count": 61
+      },
+      {
+        "outer_fold": 3,
+        "selected_candidate": "extra-trees",
+        "inner_cv_auc_by_candidate": {
+          "logistic-regression": 0.8912624612549216,
+          "random-forest": 0.8965401692217475,
+          "extra-trees": 0.900142414341962,
+          "rbf-svm": 0.9000586411996313
+        },
+        "outer_test_count": 61
+      },
+      {
+        "outer_fold": 4,
+        "selected_candidate": "logistic-regression",
+        "inner_cv_auc_by_candidate": {
+          "logistic-regression": 0.91065235342692,
+          "random-forest": 0.9097440132122214,
+          "extra-trees": 0.9025598678777869,
+          "rbf-svm": 0.9061932287365813
+        },
+        "outer_test_count": 60
+      },
+      {
+        "outer_fold": 5,
+        "selected_candidate": "rbf-svm",
+        "inner_cv_auc_by_candidate": {
+          "logistic-regression": 0.891907514450867,
+          "random-forest": 0.9022295623451692,
+          "extra-trees": 0.9069364161849711,
+          "rbf-svm": 0.9086705202312139
+        },
+        "outer_test_count": 60
+      }
+    ],
+    "LAD": [
+      {
+        "outer_fold": 1,
+        "selected_candidate": "random-forest",
+        "inner_cv_auc_by_candidate": {
+          "logistic-regression": 0.8095639351169159,
+          "random-forest": 0.8347026191980901,
+          "extra-trees": 0.8209395407625869,
+          "rbf-svm": 0.8342110806825362
+        },
+        "outer_test_count": 61
+      },
+      {
+        "outer_fold": 2,
+        "selected_candidate": "extra-trees",
+        "inner_cv_auc_by_candidate": {
+          "logistic-regression": 0.8051400884769326,
+          "random-forest": 0.8067551435994663,
+          "extra-trees": 0.8131451443016642,
+          "rbf-svm": 0.7764201952110105
+        },
+        "outer_test_count": 61
+      },
+      {
+        "outer_fold": 3,
+        "selected_candidate": "random-forest",
+        "inner_cv_auc_by_candidate": {
+          "logistic-regression": 0.7690845070422535,
+          "random-forest": 0.8007746478873239,
+          "extra-trees": 0.7925352112676057,
+          "rbf-svm": 0.7951408450704225
+        },
+        "outer_test_count": 61
+      },
+      {
+        "outer_fold": 4,
+        "selected_candidate": "rbf-svm",
+        "inner_cv_auc_by_candidate": {
+          "logistic-regression": 0.7710221726397992,
+          "random-forest": 0.8014921210430902,
+          "extra-trees": 0.7918003067912425,
+          "rbf-svm": 0.8115325617068749
+        },
+        "outer_test_count": 60
+      },
+      {
+        "outer_fold": 5,
+        "selected_candidate": "random-forest",
+        "inner_cv_auc_by_candidate": {
+          "logistic-regression": 0.816134430344443,
+          "random-forest": 0.8327987728350299,
+          "extra-trees": 0.8276391019383629,
+          "rbf-svm": 0.8240133872542184
+        },
+        "outer_test_count": 60
+      }
+    ],
+    "LCX": [
+      {
+        "outer_fold": 1,
+        "selected_candidate": "random-forest",
+        "inner_cv_auc_by_candidate": {
+          "logistic-regression": 0.6027210884353742,
+          "random-forest": 0.7176512710347297,
+          "extra-trees": 0.685141424991049,
+          "rbf-svm": 0.6709631220909416
+        },
+        "outer_test_count": 61
+      },
+      {
+        "outer_fold": 2,
+        "selected_candidate": "random-forest",
+        "inner_cv_auc_by_candidate": {
+          "logistic-regression": 0.6729681346222699,
+          "random-forest": 0.6977443609022557,
+          "extra-trees": 0.6815610454708199,
+          "rbf-svm": 0.6741854636591479
+        },
+        "outer_test_count": 61
+      },
+      {
+        "outer_fold": 3,
+        "selected_candidate": "random-forest",
+        "inner_cv_auc_by_candidate": {
+          "logistic-regression": 0.7147869674185464,
+          "random-forest": 0.7670605084138918,
+          "extra-trees": 0.7169351951306838,
+          "rbf-svm": 0.735767991407089
+        },
+        "outer_test_count": 61
+      },
+      {
+        "outer_fold": 4,
+        "selected_candidate": "random-forest",
+        "inner_cv_auc_by_candidate": {
+          "logistic-regression": 0.5921201814058957,
+          "random-forest": 0.67453231292517,
+          "extra-trees": 0.6400226757369615,
+          "rbf-svm": 0.6602536848072562
+        },
+        "outer_test_count": 60
+      },
+      {
+        "outer_fold": 5,
+        "selected_candidate": "random-forest",
+        "inner_cv_auc_by_candidate": {
+          "logistic-regression": 0.6620910384068279,
+          "random-forest": 0.7406116642958749,
+          "extra-trees": 0.6668563300142247,
+          "rbf-svm": 0.7120199146514936
+        },
+        "outer_test_count": 60
+      }
+    ],
+    "RCA": [
+      {
+        "outer_fold": 1,
+        "selected_candidate": "logistic-regression",
+        "inner_cv_auc_by_candidate": {
+          "logistic-regression": 0.6888872716687285,
+          "random-forest": 0.6618150061858671,
+          "extra-trees": 0.6782621352157776,
+          "rbf-svm": 0.6581762608252675
+        },
+        "outer_test_count": 61
+      },
+      {
+        "outer_fold": 2,
+        "selected_candidate": "extra-trees",
+        "inner_cv_auc_by_candidate": {
+          "logistic-regression": 0.7023506295029475,
+          "random-forest": 0.7009679062659195,
+          "extra-trees": 0.7142857142857143,
+          "rbf-svm": 0.7030056036678554
+        },
+        "outer_test_count": 61
+      },
+      {
+        "outer_fold": 3,
+        "selected_candidate": "logistic-regression",
+        "inner_cv_auc_by_candidate": {
+          "logistic-regression": 0.729350120078597,
+          "random-forest": 0.6791354341023216,
+          "extra-trees": 0.6958736627610801,
+          "rbf-svm": 0.7010406811731315
+        },
+        "outer_test_count": 61
+      },
+      {
+        "outer_fold": 4,
+        "selected_candidate": "extra-trees",
+        "inner_cv_auc_by_candidate": {
+          "logistic-regression": 0.6461104684788895,
+          "random-forest": 0.7034412955465587,
+          "extra-trees": 0.7155870445344129,
+          "rbf-svm": 0.6966454598033545
+        },
+        "outer_test_count": 60
+      },
+      {
+        "outer_fold": 5,
+        "selected_candidate": "rbf-svm",
+        "inner_cv_auc_by_candidate": {
+          "logistic-regression": 0.6992513676936366,
+          "random-forest": 0.7054419809962569,
+          "extra-trees": 0.6999712064497553,
+          "rbf-svm": 0.7191189173625109
+        },
+        "outer_test_count": 60
+      }
+    ]
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "artifact_version": "research-model-artifacts-v1",
+  "research_only": true,
+  "files": {
+    "cad_pipeline.joblib": "7beb0c4c2ae2f919104e79cdf0cc456fe4a59be82b76a881dceebd548eca075d",
+    "candidate_screening_oof_predictions.csv": "7cad67641a01656358e5b62cc918ffb9b6b55580a83983bda08d7d500694f896",
+    "evaluation.json": "e899ef9d3515edbb25ae9d6ebf8ac20df4bfcf057c13d04101bc0db2d5e029bb",
+    "lad_pipeline.joblib": "9167ed3e9cfde8abf869706f93fd725fbcf1b43b89a7573d40a279bde9ebb243",
+    "lcx_pipeline.joblib": "d4c0c9777171dbde1d94d5e4d4779fe59dcdc08810f7779cbfcd3c41e34161f2",
+    "model_registry.json": "7d43acf5dffe3c685b2b1b662be5ce1b2861406f83b92444a43f5e53b24a621c",
+    "nested_oof_predictions.csv": "053ce47fa54a9af97608dc19ba3cfdf46b6acf3613547a753481fde1b3eb767a",
+    "rca_pipeline.joblib": "47293474030defbf7017c15b8ab70c774db5d45349e6d6d8461286800a5fbf24"
+  }
+}

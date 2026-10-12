@@ -1,0 +1,52 @@
+{
+  "version": "coronarylens-research-v1",
+  "created_at_utc": "2026-10-10T18:57:52.976865+00:00",
+  "dataset_checksum": "ebdc78fbf3b0c631c569e0b0907c1d8bfeedb6dc4953133a86c58b015d5983bf",
+  "feature_schema_version": "uci411-source-v2-display-normalization",
+  "feature_schema_checksum": "cc76d86d1485c6b6f536c6b5493ddb9444786820b1b6e43ef17fafb79a7f4a45",
+  "training_sample_count": 303,
+  "predictor_count": 55,
+  "targets": [
+    {
+      "target": "CAD",
+      "model_family": "logistic-regression",
+      "model_version": "research-v1",
+      "validation_method": "5-fold nested stratified CV; 3-fold inner CV selects a candidate per outer fold",
+      "score_semantics": "probability",
+      "selection_rationale": "Serving family selected by full-cohort OOF ROC-AUC screening; nested CV metrics estimate the selection procedure and are not external validation.",
+      "artifact_file": "cad_pipeline.joblib",
+      "artifact_sha256": "7beb0c4c2ae2f919104e79cdf0cc456fe4a59be82b76a881dceebd548eca075d"
+    },
+    {
+      "target": "LAD",
+      "model_family": "random-forest",
+      "model_version": "research-v1",
+      "validation_method": "5-fold nested stratified CV; 3-fold inner CV selects a candidate per outer fold",
+      "score_semantics": "probability",
+      "selection_rationale": "Serving family selected by full-cohort OOF ROC-AUC screening; nested CV metrics estimate the selection procedure and are not external validation.",
+      "artifact_file": "lad_pipeline.joblib",
+      "artifact_sha256": "9167ed3e9cfde8abf869706f93fd725fbcf1b43b89a7573d40a279bde9ebb243"
+    },
+    {
+      "target": "LCX",
+      "model_family": "random-forest",
+      "model_version": "research-v1",
+      "validation_method": "5-fold nested stratified CV; 3-fold inner CV selects a candidate per outer fold",
+      "score_semantics": "probability",
+      "selection_rationale": "Serving family selected by full-cohort OOF ROC-AUC screening; nested CV metrics estimate the selection procedure and are not external validation.",
+      "artifact_file": "lcx_pipeline.joblib",
+      "artifact_sha256": "d4c0c9777171dbde1d94d5e4d4779fe59dcdc08810f7779cbfcd3c41e34161f2"
+    },
+    {
+      "target": "RCA",
+      "model_family": "extra-trees",
+      "model_version": "research-v1",
+      "validation_method": "5-fold nested stratified CV; 3-fold inner CV selects a candidate per outer fold",
+      "score_semantics": "probability",
+      "selection_rationale": "Serving family selected by full-cohort OOF ROC-AUC screening; nested CV metrics estimate the selection procedure and are not external validation.",
+      "artifact_file": "rca_pipeline.joblib",
+      "artifact_sha256": "47293474030defbf7017c15b8ab70c774db5d45349e6d6d8461286800a5fbf24"
+    }
+  ],
+  "research_only": true
+}

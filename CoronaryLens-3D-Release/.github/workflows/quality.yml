@@ -1,0 +1,37 @@
+name: quality
+on:
+  push:
+  pull_request:
+
+jobs:
+  python-research-pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install -r requirements-research.txt
+      - run: python -m pytest
+
+  web-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+      - run: corepack enable
+      - run: corepack prepare pnpm@10.12.1 --activate
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run typecheck
+      - run: pnpm --filter @workspace/api-server run build
+      - run: pnpm --filter @workspace/coronarylens-3d run build
+
+  container-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build same-origin container and run image-time model smoke test
+        run: docker build --tag coronarylens-3d:ci .
