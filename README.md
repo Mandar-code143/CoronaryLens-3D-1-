@@ -151,6 +151,25 @@ Evaluated on the 303-patient retrospective cohort from the **UCI Z-Alizadeh Sani
 
 ---
 
+## 🤖 AI-Assisted Development & Transparency
+
+In accordance with the **Multimodal AI Hackathon 2026** AI-assistance disclosure requirement, the team discloses that an AI coding assistant (Antigravity / Google DeepMind) was used as a pair-programming aid during selected phases of development. All AI-generated or AI-assisted code was reviewed, tested, integrated, and is understood by the team; the team takes full engineering responsibility for the submitted implementation.
+
+The following areas received material AI assistance:
+
+| Area | Nature of AI Assistance |
+|:---|:---|
+| **ML pipeline & evaluation logic** | Debugging cross-platform CRLF/LF checksum mismatch; implementing `sha256_match` normalisation; native container-side model training in `Dockerfile` and CI; reviewing nested-CV correctness. |
+| **Inference & explainability layer** | Reviewing `infer_models.py` (Platt calibration, operating thresholds, SHAP additivity checks); diagnosing scikit-learn version serialisation incompatibilities between development and container environments. |
+| **Backend / API** | Diagnosing and resolving Render deployment failures; implementing the keep-alive telemetry endpoint; reviewing route correctness and error-response contracts. |
+| **Frontend UI** | Refining `Inputs.tsx` layout (sidebar proportions, field-group card structure, sticky bar); updating `styles.css` to fix spacing and header rendering on the production deployment. |
+| **Test suite & CI** | Updating `test_inference.py` for cross-platform robustness; adding a model-regeneration step in `.github/workflows/quality.yml` to ensure CI trains natively on the runner environment. |
+| **Technical documentation** | Generating developer-facing content in `README.md`, `docs/`, and inline code comments. |
+
+The core scientific methodology (nested cross-validation design, leakage quarantine, Platt calibration, Youden threshold selection, SHAP explainability architecture, and dataset handling) was designed and verified by the team. The trained model artifacts reflect team-directed engineering choices on the Z-Alizadeh Sani cardiovascular dataset.
+
+---
+
 ## 💻 Local Setup & Reproduction
 
 ### Prerequisites
