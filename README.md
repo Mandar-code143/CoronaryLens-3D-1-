@@ -1,6 +1,6 @@
 # 🫀 CoronaryLens 3D — Multimodal Cardiovascular AI Workstation
 
-[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-Active_24%2F7-34D399?style=for-the-badge)](https://coronarylens-3d.onrender.com/)
+[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-Online-34D399?style=for-the-badge)](https://coronarylens-3d.onrender.com/)
 [![Hackathon](https://img.shields.io/badge/Submission-Multimodal_AI_Hackathon-6366F1?style=for-the-badge)](#-multimodal-ai-hackathon-submission)
 [![Python](https://img.shields.io/badge/Python-3.13-3776AB?style=flat&logo=python&logoColor=white)](https://www.python.org/)
 [![Node](https://img.shields.io/badge/Node.js-22_LTS-339933?style=flat&logo=node.js&logoColor=white)](https://nodejs.org/)
@@ -12,7 +12,7 @@
 > **Live Deployment:** [https://coronarylens-3d.onrender.com/](https://coronarylens-3d.onrender.com/)  
 > **Interactive 3D Workstation:** [https://coronarylens-3d.onrender.com/workspace](https://coronarylens-3d.onrender.com/workspace)  
 > **Clinical Evidence & Diagnostics:** [https://coronarylens-3d.onrender.com/evidence](https://coronarylens-3d.onrender.com/evidence)  
-> *Deployed 24/7 with zero cold starts via continuous telemetry keep-alive.*
+> *Hosted on Render free tier — may take a few seconds to wake on first visit.*
 
 ---
 
@@ -210,7 +210,7 @@ The application runs as a production container on Render:
 - **Health Endpoint:** [https://coronarylens-3d.onrender.com/api/health](https://coronarylens-3d.onrender.com/api/health)
 - **Model Readiness Endpoint:** [https://coronarylens-3d.onrender.com/api/ready](https://coronarylens-3d.onrender.com/api/ready)
 - **Full Research Artifacts Endpoint:** [https://coronarylens-3d.onrender.com/api/evaluation/details](https://coronarylens-3d.onrender.com/api/evaluation/details)
-- **Keep-Alive Service:** Active automated polling ensures 24/7 responsiveness with zero container sleep or cold-start lag.
+- **Hosting:** Render free tier — the container sleeps after inactivity and wakes automatically on the next request (first load may take ~30 s).
 
 ---
 
